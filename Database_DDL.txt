@@ -1,3 +1,5 @@
+//Create tables
+
 CREATE TABLE users(
 email VARCHAR(64)PRIMARY KEY,
 password VARCHAR(20) NOT NULL,

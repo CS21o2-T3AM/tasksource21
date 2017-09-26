@@ -1,3 +1,5 @@
+//This creates 20 users
+
 insert into users (email, password, name, dateOfBirth, admin, phone) values ('amarunchak0@china.com.cn', 'gR6ZJHHZu1', 'Ariana Marunchak', '26/02/1992', false, '97475983');
 insert into users (email, password, name, dateOfBirth, admin, phone) values ('vdumphy1@japanpost.jp', 'QJ4eSI', 'Virgie Dumphy', '18/01/1989', false, '97076622');
 insert into users (email, password, name, dateOfBirth, admin, phone) values ('cmcalindon2@go.com', '6dTEf8LxL', 'Christal McAlindon', '20/07/1983', false, '98813554');
