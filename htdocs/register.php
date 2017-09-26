@@ -160,7 +160,7 @@ if (isset($_POST['submit'])) {
 
                 <div>
 
-                        <br /><br /><p class="text-center">Back to <a href="/index.php" >Login</a>
+                        <br /><br /><p class="text-center">Back to <a href="index.php" >Login</a>
 
                 </div>
 
