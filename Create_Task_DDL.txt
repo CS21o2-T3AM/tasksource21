@@ -1,4 +1,4 @@
-//This creates 100 tasks, TEST TEHJAERAEJDAEKLDLAJELJAED
+//This creates 100 tasks, TEST test test
 
 insert into create_task (ownerEmail, taskName, taskDesc, taskCategory, taskDateAndTime, status, winningBidEmail, biddingClose) values ('amarunchak0@china.com.cn', 'House Cleaning', 'Blue', 'House Cleaning', '2016-10-27 18:42:37', 'selecting', 'null', '05/10/2017');
 insert into create_task (ownerEmail, taskName, taskDesc, taskCategory, taskDateAndTime, status, winningBidEmail, biddingClose) values ('cmcalindon2@go.com', 'House Cleaning', 'Yellow', 'Furniture assembly', '2016-10-09 00:13:49', 'open', 'ryerralla@geocities.com', '09/11/2017');
