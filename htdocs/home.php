@@ -29,8 +29,6 @@ try {
     $host = 'localhost';
     $dbname='tasksource21';
 
-    host=localhost port=5432 dbname=tasksource21 user=postgres password=password
-
     $connec = new PDO("pgsql:host=$host;dbname=$dbname", $dbuser, $dbpass);;
 }catch (PDOException $e) {
     echo "Error : " . $e->getMessage() . "<br/>";
