@@ -1,5 +1,4 @@
-<php?
-//Start the session
+<?php
 session_start();
 ?>
 
@@ -33,6 +32,9 @@ $row    = pg_fetch_assoc($result);		// To store the result row
 if (isset($_POST['submit'])) {
     $serverPassword = $row[password];
     $inputPassword = $_POST['inputPassword'];
+
+    $_SESSION['userName']= $row[name];
+    $_SESSION['userEmail'] = $row[email];
 
     if($inputPassword==$serverPassword){
         header("Location: home.php");
