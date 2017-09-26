@@ -1,3 +1,11 @@
+<?php
+// Use session to pass infomation such as email.
+//Note input validation not done yet
+session_start();
+$email=$_SESSION["userEmail"];
+$name=$_SESSION["userName"];
+
+?>
 <!DOCTYPE html>
 <head>
     <title>UPDATE PostgreSQL data with PHP</title>
@@ -6,7 +14,30 @@
 </head>
 <body>
 <h1>Welcome</h1>
+<form name="home" action="home.php" method="POST">
+    <li><input type="submit" name="logout" value="Logout" style="position: absolute; right: 0;"/></li>
+</form>
 <h2>My task</h2>
+<form name="home" action="home.php" method="POST">
+<li><input type="submit" name="Addtask" value="Add task" style="position: absolute; right: 0;"/></li>
+</form>
+
+<?php
+if (isset($_POST['Addtask'])){
+   //pass email and username to next page
+    $_SESSION['userName'] = $name;
+    $_SESSION['userEmail'] = $email;
+    header("Location: CreateTask.php"); //send user to the next page
+    exit;
+}
+if (isset($_POST['logout'])){
+    //pass email and username to next page
+    $_SESSION['userName'] = $name;
+    $_SESSION['userEmail'] = $email;
+    header("Location: index.php"); //send user to the next page
+    exit;
+}
+?>
 <style>
     table {
         border-collapse: collapse;
@@ -25,7 +56,7 @@
 <?php
 try {
     $dbuser = 'postgres';
-    $dbpass = 'password';
+    $dbpass = 'jaspreet';
     $host = 'localhost';
     $dbname='tasksource21';
 
@@ -34,7 +65,7 @@ try {
     echo "Error : " . $e->getMessage() . "<br/>";
     die();
 }
-$sql = 'SELECT * FROM create_task where owneremail = '."'vdumphy1@japanpost.jp'";
+$sql = 'SELECT * FROM create_task where owneremail = '."'$email'";
 echo "<table>";
 echo "<tr>";
 echo "<th align='center' width='200'>Owner Email</th>";
