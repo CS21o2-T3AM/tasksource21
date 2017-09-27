@@ -56,8 +56,8 @@ if (isset($_POST['logout'])){
 <?php
 try {
     $dbuser = 'postgres';
-    $dbpass = 'jaspreet';
-    $host = 'localhost';
+    $dbpass = 'M@pler0ck';
+    $host = '127.0.0.1';
     $dbname='tasksource21';
 
     $connec = new PDO("pgsql:host=$host;dbname=$dbname", $dbuser, $dbpass);;
@@ -93,31 +93,45 @@ echo "</table>";
 echo "</div>";
 echo "<h2>Avalable task</h2>";
 echo "<br/>";
+echo "<ul style='list-style: none'>";
+echo "<form name='search' action='' method='POST'>";
+echo   "<li>Task Name:";
+echo      "<input type='text' name='taskName'/>";
+echo    "<li><input type='submit' name='search'></li>";
+echo"</form>";
+echo "</ul>";
+$_POST['search'] = true;
+if (isset($_POST['search'])) {
+    echo $_POST['taskName'];
 
-echo "<div STYLE=\" height: 300px; width: auto; font-size: 18px; overflow: auto;\">";
-$sql = 'SELECT * FROM create_task where owneremail != '."'vdumphy1@japanpost.jp'";
-echo "<table>";
-echo "<tr>";
-echo "<th align='center' width='200'>Owner Email</th>";
-echo "<th align='center' width='200'>Task Name</th>";
-echo "<th align='center' width='200'>Task Category</th>";
-echo "<th align='center' width='200'>Date Time</th>";
-echo "<th align='center' width='200'>Status</th>";
-echo "<th align='center' width='200'>Winning User</th>";
-echo "<th align='center' width='200'>Bidding close</th>";
-foreach ($connec->query($sql) as $row)
-{
+    echo "<div STYLE=\" height: 300px; width: auto; font-size: 18px; overflow: auto;\">";
+    $sql = 'SELECT * FROM create_task where owneremail != '."'$email'"."AND taskname ILIKE'%".$_POST['taskName']."%'";
+    echo "<table>";
     echo "<tr>";
-    echo "<td align='center' width='200'>" . $row['owneremail'] . "</td>";
-    echo "<td align='center' width='200'>" . $row['taskname'] . "</td>";
-    echo "<td align='center' width='200'>" . $row['taskcategory'] . "</td>";
-    echo "<td align='center' width='200'>" . $row['taskdateandtime'] . "</td>";
-    echo "<td align='center' width='200'>" . $row['status'] . "</td>";
-    echo "<td align='center' width='200'>" . $row['winningbidemail'] . "</td>";
-    echo "<td align='center' width='200'>" . $row['biddingclose'] . "</td>";
-    echo "</tr>";}
-echo "</table>";
-echo "</div>";
+    echo "<th align='center' width='200'>Owner Email</th>";
+    echo "<th align='center' width='200'>Task Name</th>";
+    echo "<th align='center' width='200'>Task Category</th>";
+    echo "<th align='center' width='200'>Date Time</th>";
+    echo "<th align='center' width='200'>Status</th>";
+    echo "<th align='center' width='200'>Winning User</th>";
+    echo "<th align='center' width='200'>Bidding close</th>";
+    foreach ($connec->query($sql) as $row)
+    {
+        echo "<tr>";
+        echo "<td align='center' width='200'>" . $row['owneremail'] . "</td>";
+        echo "<td align='center' width='200'><a href=\"makeabid.php?taskid={$row['taskid']}&owneremail={$row['owneremail']}\">". $row['taskname'] ."</a></td>";
+        echo "<td align='center' width='200'>" . $row['taskcategory'] . "</td>";
+        echo "<td align='center' width='200'>" . $row['taskdateandtime'] . "</td>";
+        echo "<td align='center' width='200'>" . $row['status'] . "</td>";
+        echo "<td align='center' width='200'>" . $row['winningbidemail'] . "</td>";
+        echo "<td align='center' width='200'>" . $row['biddingclose'] . "</td>";
+        echo "</tr>";}
+    echo "</table>";
+    echo "</div>";
+
+}
+
+
 ?>
 
 </body>

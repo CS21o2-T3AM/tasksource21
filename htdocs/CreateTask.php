@@ -4,7 +4,6 @@
 session_start();
 $email=$_SESSION["userEmail"];
 $name=$_SESSION["userName"];
-
 ?>
 <!DOCTYPE html>
 
@@ -38,7 +37,6 @@ if (isset($_POST['submit'])) {
         $email = $_POST[userid];
         $counter++;
     }
-
     if (empty($_POST[password])) {
         $nameErr1 = "Field canont be empty";
     }
@@ -56,7 +54,6 @@ if (isset($_POST['submit'])) {
             }
         }
     }
-
     if (empty($_POST[dob]))  {
         $nameErr3= "Field canont be empty";
     }
@@ -64,7 +61,6 @@ if (isset($_POST['submit'])) {
         $dob = $_POST[dob];
         $counter++;
     }
-
     if (empty($_POST[name]))  {
         $nameErr4 = "Field canont be empty";
     }
@@ -129,11 +125,11 @@ if (isset($_POST['submit'])) {
 
             <li>Select task Category:
                 <select name="cat" onchange="showfield(this.options[this.selectedIndex].value)">
-                      <option selected="selected">Please select ...</option>
-                      <option value="Minor repair">Minor repair</option>
-                      <option value="House Cleaning">House Cleaning</option>
-                      <option value="Home Improvement">Home Improvement</option>
-                      <option value="Furniture assembly">Furniture assembly</option>
+                    <option selected="selected">Please select ...</option>
+                    <option value="Minor repair">Minor repair</option>
+                    <option value="House Cleaning">House Cleaning</option>
+                    <option value="Home Improvement">Home Improvement</option>
+                    <option value="Furniture assembly">Furniture assembly</option>
                     <option value="House Cleaning">House Cleaning</option>
                     <option value="Moving & packing">Moving & packing</option>
                     <option value="Other">Other</option>
@@ -167,11 +163,9 @@ if (isset($_POST['submit'])) {
                 }
                 $taskDateNTime= $_POST[date];
                 echo "$taskDateNTime";
-
                 $EndBid = $_POST[bids];
                 $status = "open";
-
-                $db     = pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres password=jaspreet");
+                $db     = pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=Mapler0ck");
                 if($userexist==false){
                     try {
                         $result = pg_query($db, "INSERT INTO create_task (ownerEmail,taskName,taskDesc,taskCategory,taskDateAndTime,status,biddingClose) 
@@ -188,7 +182,6 @@ if (isset($_POST['submit'])) {
                     catch(mysqli_sql_exception $ex){
                         echo "DB Error";
                     }
-
                 }
             }
             if (isset($_POST['back'])){

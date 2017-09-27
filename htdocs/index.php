@@ -25,7 +25,7 @@ session_start();
 
 <?php
 // Connect to the database. Please change the password in the following line accordingly
-$db     = pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres password=jaspreet");
+$db     = pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=M@pler0ck");
 $result = pg_query($db, "SELECT * FROM users where email = '$_POST[email]'");		// Query template
 $row    = pg_fetch_assoc($result);		// To store the result row
 
