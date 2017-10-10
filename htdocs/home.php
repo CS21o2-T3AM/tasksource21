@@ -73,7 +73,7 @@ echo "<th align='center' width='200'>Task Name</th>";
 echo "<th align='center' width='200'>Task Category</th>";
 echo "<th align='center' width='200'>Date Time</th>";
 echo "<th align='center' width='200'>Status</th>";
-echo "<th align='center' width='200'>Winning User</th>";
+//echo "<th align='center' width='200'>Winning User</th>";
 echo "<th align='center' width='200'>Bidding close</th>";
 foreach ($connec->query($sql) as $row)
 {
@@ -85,7 +85,7 @@ foreach ($connec->query($sql) as $row)
     echo "<td align='center' width='200'>" . $row['taskcategory'] . "</td>";
     echo "<td align='center' width='200'>" . $row['taskdateandtime'] . "</td>";
     echo "<td align='center' width='200'>" . $row['status'] . "</td>";
-    echo "<td align='center' width='200'>" . $row['winningbidemail'] . "</td>";
+   // echo "<td align='center' width='200'>" . $row['winningbidemail'] . "</td>";
     echo "<td align='center' width='200'>" . $row['biddingclose'] . "</td>";
     echo "</tr>";}
 
@@ -113,7 +113,7 @@ if (isset($_POST['search'])) {
     echo "<th align='center' width='200'>Task Category</th>";
     echo "<th align='center' width='200'>Date Time</th>";
     echo "<th align='center' width='200'>Status</th>";
-    echo "<th align='center' width='200'>Winning User</th>";
+   // echo "<th align='center' width='200'>Winning User</th>";
     echo "<th align='center' width='200'>Bidding close</th>";
     foreach ($connec->query($sql) as $row)
     {
@@ -123,7 +123,7 @@ if (isset($_POST['search'])) {
         echo "<td align='center' width='200'>" . $row['taskcategory'] . "</td>";
         echo "<td align='center' width='200'>" . $row['taskdateandtime'] . "</td>";
         echo "<td align='center' width='200'>" . $row['status'] . "</td>";
-        echo "<td align='center' width='200'>" . $row['winningbidemail'] . "</td>";
+       // echo "<td align='center' width='200'>" . $row['winningbidemail'] . "</td>";
         echo "<td align='center' width='200'>" . $row['biddingclose'] . "</td>";
         echo "</tr>";}
     echo "</table>";

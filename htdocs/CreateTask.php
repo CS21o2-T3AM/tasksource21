@@ -162,7 +162,6 @@ if (isset($_POST['submit'])) {
                     $taskCat= $_POST[cat];
                 }
                 $taskDateNTime= $_POST[date];
-                echo "$taskDateNTime";
                 $EndBid = $_POST[bids];
                 $status = "open";
                 $db     = pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=M@pler0ck");
