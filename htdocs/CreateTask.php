@@ -164,13 +164,12 @@ if (isset($_POST['submit'])) {
                 $taskDateNTime= $_POST[date];
                 $EndBid = $_POST[bids];
                 $status = "open";
-                $db     = pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=M@pler0ck");
-                if($userexist==false){
+                $db     = pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres password=jaspreet");
                     try {
                         $result = pg_query($db, "INSERT INTO create_task (ownerEmail,taskName,taskDesc,taskCategory,taskDateAndTime,status,biddingClose) 
                         VALUES('$email','$taskName','$taskDesc','$taskCat','$taskDateNTime','$status','$EndBid')");
                         if(!$result){
-                            echo "Update failed!!";
+                            echo "Create task failed!!";
                         } else {
                             $_SESSION['userName'] = $name;
                             $_SESSION['userId'] = $email;
@@ -181,7 +180,7 @@ if (isset($_POST['submit'])) {
                     catch(mysqli_sql_exception $ex){
                         echo "DB Error";
                     }
-                }
+
             }
             if (isset($_POST['back'])){
                 $_SESSION['userName'] = $name;
