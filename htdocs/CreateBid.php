@@ -6,7 +6,7 @@ $ownerEmail= $_GET['owneremail'];
 
 $userEmail= $_GET['useremail'];
 
-$db= pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres password=password");
+$db= pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres password=jaspreet");
 
 ?>
     <!DOCTYPE html>
