@@ -164,7 +164,7 @@ if (isset($_POST['submit'])) {
                 $taskDateNTime= $_POST[date];
                 $EndBid = $_POST[bids];
                 $status = "open";
-                $db     = pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres password=jaspreet");
+                $db     = pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres password=password");
                     try {
                         $result = pg_query($db, "INSERT INTO create_task (ownerEmail,taskName,taskDesc,taskCategory,taskDateAndTime,status,biddingClose) 
                         VALUES('$email','$taskName','$taskDesc','$taskCat','$taskDateNTime','$status','$EndBid')");

@@ -6,7 +6,7 @@ $ownerEmail= $_GET['owneremail'];
 
 $userEmail= $_GET['useremail'];
 
-$db= pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres password=jaspreet");
+$db= pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres password=password");
 
 ?>
     <!DOCTYPE html>
@@ -42,12 +42,26 @@ $db= pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres pass
 
         <div class="row">
 <?php
+    $button="bid";
+    $updatebid = pg_query($db, "SELECT c.*, b.* FROM create_task c Inner Join bid_task b On c.owneremail = b.owneremail AND c.taskid = b.taskid  
+                              where c.owneremail = '$ownerEmail'AND c.taskid = '$taskId'");
+    $updateRow = pg_fetch_assoc($updatebid);
 
-    $result = pg_query($db, "SELECT c.*, u.name FROM create_task c Inner Join users u On c.owneremail = u.email 
+    if(!$updateRow==""){
+        $pevbidamt = $updateRow[bidamount];
+        $button="updateBid";
+        $failed = $updateRow[bidstatus];
+        if(strcmp($failed,'failed')==0){
+            $disbale=true;
+        }
+    }
+
+
+    $result = pg_query($db, "SELECT c.*, u.name, u.phone FROM create_task c Inner Join users u On c.owneremail = u.email 
                               where c.owneremail = '$ownerEmail'AND c.taskid = '$taskId'");
     $row    = pg_fetch_assoc($result);
     echo "
-
+ 
        <div><h3>Task informtion</h3></div>
 
        <form name='Information' action=".'CreateBid.php?taskid='."$taskId&owneremail=$ownerEmail&useremail=$userEmail method='GET' >  
@@ -80,24 +94,30 @@ $db= pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres pass
         date_default_timezone_set("Asia/Singapore");
         echo "Today is " . date("d/m/Y h:i:sa"). "<br/>";
         echo "
-        
+      
             <form action=".'CreateBid.php?taskid='."$taskId&owneremail=$ownerEmail&useremail=$userEmail method='POST'>
-            <li>Enter a Bid: <input type='text' name='bid' /></li>
-            <br/><div></div>
+            <li>Enter a Bid: <input type='text' name='bidamt'  value=$pevbidamt></li>
+            <br/><div></div>";
 
-            <li><input type='submit' name='submit' value='Bid'/></li>
-            <br/><div></div>
+        if($disbale==false){
+           echo"
+            <li><input type='submit' name=$button  value='Bid'/></li>
+           
+            <br/><div></div>";
+            }
+          echo"  
             <li><input type='submit' name='back' value='Back'/></li>
             ";
 
 
-            if (isset($_POST['submit'])){
+            if (isset($_POST['bid'])){
 
             date_default_timezone_set("Asia/Singapore");
-            $bidamt = $_POST[bid];
+            $bidamt = $_POST[bidamt];
             $biddateandtime= date("d/m/Y h:i:sa");
             //$name = $row[name];
-            $status = "open";
+            $status = "Open";
+
             try {
             $result2 = pg_query($db, "INSERT INTO bid_task (owneremail,taskid,bidderemail,bidamount,bidstatus,biddatetime) 
                         VALUES('$ownerEmail','$taskId','$userEmail','$bidamt','$status','$biddateandtime')");
@@ -113,8 +133,30 @@ $db= pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres pass
             catch(mysqli_sql_exception $ex){
             echo "DB Error";
             }
-
             }
+
+            if (isset($_POST['updateBid'])){
+                date_default_timezone_set("Asia/Singapore");
+                $bidamt = $_POST[bidamt];
+                $biddateandtime= date("d/m/Y h:i:sa");
+                //$name = $row[name];
+
+                try {
+                    $result2 = pg_query($db, "UPDATE bid_task b set bidamount='$bidamt',biddatetime='$biddateandtime' 
+                                                     where b.taskid = '$taskId' And b.owneremail= '$ownerEmail' AND b.bidderemail ='$userEmail' ");
+
+                        $_SESSION['userName'] = $name;
+                        $_SESSION['userId'] = $email;
+                        header("Location: home.php");
+                        exit;
+
+                }
+                catch(mysqli_sql_exception $ex){
+                    echo "DB Error";
+                }
+                }
+
+
             if (isset($_POST['back'])){
             $_SESSION['userName'] = $name;
             $_SESSION['userId'] = $email;

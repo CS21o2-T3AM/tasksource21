@@ -57,7 +57,7 @@ if (isset($_POST['logout'])){
 
 try {
     $dbuser = 'postgres';
-    $dbpass = 'jaspreet';
+    $dbpass = 'password';
     $host = 'localhost';
     $dbname='tasksource21';
 
@@ -82,7 +82,7 @@ foreach ($connec->query($sql) as $row)
     echo "<tr>";
     //echo "<td align='center' width='200'><a href=\"bid.php?taskid=".$row['taskid'].$row['owneremail'].">". $row['taskname'] ."</a></td>";
     echo "<td align='center' width='200'>" . $row['owneremail'] . "</td>";
-    echo "<td align='center' width='200'><a href=\"updatetask.php?taskid={$row['taskid']}&owneremail={$row['owneremail']}&useremail=$email\">". $row['taskname'] ."</a></td>";
+    echo "<td align='center' width='200'><a href=\"UpdateTask.php?taskid={$row['taskid']}&owneremail={$row['owneremail']}\">". $row['taskname'] ."</a></td>";
     echo "<td align='center' width='200'>" . $row['taskcategory'] . "</td>";
     echo "<td align='center' width='200'>" . $row['taskdateandtime'] . "</td>";
     echo "<td align='center' width='200'>" . $row['status'] . "</td>";
