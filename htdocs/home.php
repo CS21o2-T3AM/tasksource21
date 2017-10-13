@@ -57,11 +57,7 @@ if (isset($_POST['logout'])){
 
 try {
     $dbuser = 'postgres';
-<<<<<<< HEAD
     $dbpass = 'password';
-=======
-    $dbpass = 'jaspreet';
->>>>>>> 7e52b48035ced84a2ea4d200a211bb62ad4bbb29
     $host = 'localhost';
     $dbname='tasksource21';
 
