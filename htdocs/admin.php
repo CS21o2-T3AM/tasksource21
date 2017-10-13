@@ -98,7 +98,7 @@ if (isset($_POST['logout'])){
         }
         else{
             //If all else fails, display default
-            echo "Showing All Bids";
+            echo "Showing All Users";
             $sql = 'select * from users';
         }
 
