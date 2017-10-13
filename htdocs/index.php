@@ -18,14 +18,18 @@ session_start();
     <input type="text" name="email"/>
     <li>Password:
     <input type="password"name="inputPassword"/></li>
-    <li><input type="submit" name="submit"></li>
+    <li><input type="submit" name="submit" value="Login"></li>
 </form>
 </ul>
 <a href="register.php">Register</a>
 
 <?php
 // Connect to the database. Please change the password in the following line accordingly
+<<<<<<< HEAD
 $db     = pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres password=password");
+=======
+$db     = pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres password=jaspreet");
+>>>>>>> 7e52b48035ced84a2ea4d200a211bb62ad4bbb29
 $result = pg_query($db, "SELECT * FROM users where email = '$_POST[email]'");		// Query template
 $row    = pg_fetch_assoc($result);		// To store the result row
 

@@ -4,7 +4,9 @@
 session_start();
 $email=$_SESSION["userEmail"];
 $name=$_SESSION["userName"];
-
+echo $name."<br/>";
+date_default_timezone_set("Asia/Singapore");
+echo "Today " . date("d/m/Y h:i:sa"). "<br/>";
 ?>
 <!DOCTYPE html>
 <head>
@@ -32,8 +34,6 @@ if (isset($_POST['Addtask'])){
 }
 if (isset($_POST['logout'])){
     //pass email and username to next page
-    $_SESSION['userName'] = $name;
-    $_SESSION['userEmail'] = $email;
     header("Location: index.php"); //send user to the next page
     exit;
 }
@@ -54,9 +54,14 @@ if (isset($_POST['logout'])){
 </style>
 <div STYLE=" height: 300px; width: auto; font-size: 18px; overflow: auto;">
 <?php
+
 try {
     $dbuser = 'postgres';
+<<<<<<< HEAD
     $dbpass = 'password';
+=======
+    $dbpass = 'jaspreet';
+>>>>>>> 7e52b48035ced84a2ea4d200a211bb62ad4bbb29
     $host = 'localhost';
     $dbname='tasksource21';
 
@@ -73,7 +78,7 @@ echo "<th align='center' width='200'>Task Name</th>";
 echo "<th align='center' width='200'>Task Category</th>";
 echo "<th align='center' width='200'>Date Time</th>";
 echo "<th align='center' width='200'>Status</th>";
-echo "<th align='center' width='200'>Winning User</th>";
+//echo "<th align='center' width='200'>Winning User</th>";
 echo "<th align='center' width='200'>Bidding close</th>";
 foreach ($connec->query($sql) as $row)
 {
@@ -81,11 +86,11 @@ foreach ($connec->query($sql) as $row)
     echo "<tr>";
     //echo "<td align='center' width='200'><a href=\"bid.php?taskid=".$row['taskid'].$row['owneremail'].">". $row['taskname'] ."</a></td>";
     echo "<td align='center' width='200'>" . $row['owneremail'] . "</td>";
-    echo "<td align='center' width='200'><a href=\"makeabid.php?taskid={$row['taskid']}&owneremail={$row['owneremail']}\">". $row['taskname'] ."</a></td>";
+    echo "<td align='center' width='200'><a href=\"updatetask.php?taskid={$row['taskid']}&owneremail={$row['owneremail']}&useremail=$email\">". $row['taskname'] ."</a></td>";
     echo "<td align='center' width='200'>" . $row['taskcategory'] . "</td>";
     echo "<td align='center' width='200'>" . $row['taskdateandtime'] . "</td>";
     echo "<td align='center' width='200'>" . $row['status'] . "</td>";
-    echo "<td align='center' width='200'>" . $row['winningbidemail'] . "</td>";
+   // echo "<td align='center' width='200'>" . $row['winningbidemail'] . "</td>";
     echo "<td align='center' width='200'>" . $row['biddingclose'] . "</td>";
     echo "</tr>";}
 
@@ -97,7 +102,7 @@ echo "<ul style='list-style: none'>";
 echo "<form name='search' action='' method='POST'>";
 echo   "<li>Task Name:";
 echo      "<input type='text' name='taskName'/>";
-echo    "<li><input type='submit' name='search'></li>";
+echo    "<li><input type='submit' name='search' value='Search'></li>";
 echo"</form>";
 echo "</ul>";
 $_POST['search'] = true;
@@ -113,17 +118,17 @@ if (isset($_POST['search'])) {
     echo "<th align='center' width='200'>Task Category</th>";
     echo "<th align='center' width='200'>Date Time</th>";
     echo "<th align='center' width='200'>Status</th>";
-    echo "<th align='center' width='200'>Winning User</th>";
+    //echo "<th align='center' width='200'>Winning User</th>";
     echo "<th align='center' width='200'>Bidding close</th>";
     foreach ($connec->query($sql) as $row)
     {
         echo "<tr>";
         echo "<td align='center' width='200'>" . $row['owneremail'] . "</td>";
-        echo "<td align='center' width='200'><a href=\"makeabid.php?taskid={$row['taskid']}&owneremail={$row['owneremail']}\">". $row['taskname'] ."</a></td>";
+        echo "<td align='center' width='200'><a href=\"CreateBid.php?taskid={$row['taskid']}&owneremail={$row['owneremail']}&useremail=$email\">". $row['taskname'] ."</a></td>";
         echo "<td align='center' width='200'>" . $row['taskcategory'] . "</td>";
         echo "<td align='center' width='200'>" . $row['taskdateandtime'] . "</td>";
         echo "<td align='center' width='200'>" . $row['status'] . "</td>";
-        echo "<td align='center' width='200'>" . $row['winningbidemail'] . "</td>";
+      //  echo "<td align='center' width='200'>" . $row['winningbidemail'] . "</td>";
         echo "<td align='center' width='200'>" . $row['biddingclose'] . "</td>";
         echo "</tr>";}
     echo "</table>";
