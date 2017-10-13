@@ -135,7 +135,7 @@ if (isset($_POST['submit'])) {
                 <?php
                 if($counter == 5){
                    $userexist=false;
-                    $db     = pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=M@pler0ck");
+                    $db     = pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres password=password");
                     if($userexist==false){
                        //insert stmt to input information to DB
                         try {
