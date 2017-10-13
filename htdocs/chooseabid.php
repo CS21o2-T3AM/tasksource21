@@ -10,7 +10,7 @@ $username= $_GET['username'];
 try {
     $dbuser = 'postgres';
     $dbpass = 'password';
-    $host = 'localhost';
+    $host = '127.0.0.1';
     $dbname='tasksource21';
 
     $connec = new PDO("pgsql:host=$host;dbname=$dbname", $dbuser, $dbpass);;
@@ -18,27 +18,31 @@ try {
     echo "Error : " . $e->getMessage() . "<br/>";
     die();
 }
+
+$db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=password");
+//$disabled;
 try {
-    $result5 = pg_query($db, "select * from bid_task");
-    if($result5){
-        echo "Already selected bidder";
+    $result5 = pg_query($db, "select * from bid_task where bidstatus = 'selected' and taskid =$taskID");
+    $rows = pg_num_rows($result5);
+    echo $rows."rows selected";
+    if($rows > 0){
+        $disabled= 'disabled';
+        //echo "Already selected bidder";
     }else{
-        echo"else";
-        echo $result5;
+        //echo"else";
+        echo $rows;
     }
 }catch(mysqli_sql_exception $ex){
     echo "DB Error";
 }
-$db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=M@pler0ck");
-
 $sql = 'select * from create_task where taskid = '."'$taskID'";
 foreach ($connec->query($sql) as $row)
 {
-$taskName = $row['taskname'] ;
-$taskDesc = $row['taskdesc'] ;
-$taskCategory = $row['taskcategory'] ;
-$taskDateTime = $row['taskdateandtime'] ;
-$taskBiddingCloseDate = $row['biddingclose'] ;
+    $taskName = $row['taskname'] ;
+    $taskDesc = $row['taskdesc'] ;
+    $taskCategory = $row['taskcategory'] ;
+    $taskDateTime = $row['taskdateandtime'] ;
+    $taskBiddingCloseDate = $row['biddingclose'] ;
 }
 
 if (isset($_POST['back'])){
@@ -68,7 +72,7 @@ if (isset($_POST['back'])){
 <div class="container">
 
     <div class="row">
-            <div><h2>Selecting Bid</h2></div>
+        <div><h2>Selecting Bid</h2></div>
     </div>
 
     <div class="row">
@@ -110,48 +114,48 @@ if (isset($_POST['back'])){
     <div class="row">
         <div><h3>List of current bid:</h3></div>
 
-<?php
+        <?php
 
 
-if (isset($_POST['Select'])) {
-    if (isset($_POST['rdb'])) {
-        echo "You have selected :" . $_POST['rdb'];
-        $bidderemail = $_POST['rdb'];
-        try {
-            $result = pg_query($db, "update bid_task set bidstatus = 'selected' where taskid ='$taskId'and bidderemail ='$bidderemail'");
-            $result2 = pg_query($db, "update bid_task set bidstatus = 'failed' where taskid ='$taskId'and bidderemail !='$bidderemail'");
-            $result3 = pg_query($db, "update create_task set status = 'closed',winningbidemail ='$bidderemail' where taskid ='$taskId'");
-        }catch(mysqli_sql_exception $ex){
-            echo "DB Error";
+        if (isset($_POST['Select'])) {
+            if (isset($_POST['rdb'])) {
+                echo "You have selected :" . $_POST['rdb'];
+                $bidderemail = $_POST['rdb'];
+                try {
+                    $result = pg_query($db, "update bid_task set bidstatus = 'selected' where taskid ='$taskId'and bidderemail ='$bidderemail'");
+                    $result2 = pg_query($db, "update bid_task set bidstatus = 'failed' where taskid ='$taskId'and bidderemail !='$bidderemail'");
+                    $result3 = pg_query($db, "update create_task set status = 'closed',winningbidemail ='$bidderemail' where taskid ='$taskId'");
+                }catch(mysqli_sql_exception $ex){
+                    echo "DB Error";
+                }
+            }
         }
-    }
-}
-$sql = 'select * from bid_task where taskid =' ."'$taskID'"."order by bidderemail";
-echo "<form  method='POST'>";
-echo "<table>";
-echo "<tr>";
-echo "<th align='center' width='200'>Select</th>";
-echo "<th align='center' width='200'>Bidder Email</th>";
-echo "<th align='center' width='200'>Bid Amount</th>";
-echo "<th align='center' width='200'>Bid Status</th>";
-echo "<th align='center' width='200'>Bid Date & Time</th>";
-foreach ($connec->query($sql) as $row)
-{
+        $sql = 'select * from bid_task where taskid =' ."'$taskID'"."order by bidderemail";
+        echo "<form  method='POST'>";
+        echo "<table>";
+        echo "<tr>";
+        echo "<th align='center' width='200'>Select</th>";
+        echo "<th align='center' width='200'>Bidder Email</th>";
+        echo "<th align='center' width='200'>Bid Amount</th>";
+        echo "<th align='center' width='200'>Bid Status</th>";
+        echo "<th align='center' width='200'>Bid Date & Time</th>";
+        foreach ($connec->query($sql) as $row)
+        {
 
-    echo "<tr>";
-    echo "<td align='center' width='200'><input type='radio' name='rdb' value='$row[bidderemail]'/></td>";
-    //echo "<td align='center' width='200'><a href=\"bid.php?taskid=".$row['taskid'].$row['owneremail'].">". $row['taskname'] ."</a></td>";
-    echo "<td align='center' width='200'>" . $row['bidderemail'] . "</td>";
-    echo "<td align='center' width='200'>" . $row['bidamount'] . "</td>";
-    echo "<td align='center' width='200'>" . $row['bidstatus'] . "</td>";
-    echo "<td align='center' width='200'>" . $row['biddatetime'] . "</td>";
-    echo "</tr>";}
+            echo "<tr>";
+            echo "<td align='center' width='200'><input type='radio' name='rdb' value='$row[bidderemail]'/></td>";
+            //echo "<td align='center' width='200'><a href=\"bid.php?taskid=".$row['taskid'].$row['owneremail'].">". $row['taskname'] ."</a></td>";
+            echo "<td align='center' width='200'>" . $row['bidderemail'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['bidamount'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['bidstatus'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['biddatetime'] . "</td>";
+            echo "</tr>";}
 
-echo "</table>";
-echo    "<li><input type='submit' name='Select' value='Select bidder' style='position: absolute; left: 0;'/></li>";
-echo        "</form>";
+        echo "</table>";
+        echo    "<li><input type='submit' name='Select' value='Select bidder' style='position: absolute; left: 0;'$disabled/></li>";
+        echo        "</form>";
 
-?>
+        ?>
 
     </div>
 

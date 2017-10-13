@@ -51,7 +51,7 @@ if (isset($_POST['logout'])){
     try {
         $dbuser = 'postgres';
         $dbpass = 'password';
-        $host = 'localhost';
+        $host = '127.0.0.1';
         $dbname='tasksource21';
 
         $connec = new PDO("pgsql:host=$host;dbname=$dbname", $dbuser, $dbpass);;

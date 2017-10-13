@@ -4,7 +4,7 @@ $taskId= $_GET['taskid'];
 
 $ownerEmail= $_GET['owneremail'];
 
-$db= pg_connect("host=localhost port=5432 dbname=tasksource21 user=postgres password=password");
+$db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=password");
 
 ?>
 <!DOCTYPE html>
