@@ -69,7 +69,7 @@ if (isset($_POST['logout'])){
         echo "Error : " . $e->getMessage() . "<br/>";
         die();
     }
-    $sql = 'select *, ct.taskid as cttask ,ct.owneremail as oe , count as bidcount from  create_task ct left join bidcount bc on ct.taskid = bc.taskid where ct.owneremail = '."'$email'"." order by count asc";
+    $sql = 'select *, ct.taskid as cttask ,ct.owneremail as oe , count as bidcount from  create_task ct left join bidcount bc on ct.taskid = bc.taskid where ct.status != '."'deleted'"." AND ct.owneremail = "."'$email'"." order by count asc";
     echo "<table>";
     echo "<thead>";
     echo "<tr>";
@@ -89,7 +89,7 @@ if (isset($_POST['logout'])){
         echo "<tr>";
         //echo "<td align='center' width='200'><a href=\"bid.php?taskid=".$row['taskid'].$row['owneremail'].">". $row['taskname'] ."</a></td>";
         echo "<td align='center' width='200'>" . $row['oe'] . "</td>";
-        echo "<td align='center' width='200'><a href=\"CreateBid.php?taskid={$row['cttask']}&owneremail={$row['oe']}&useremail={$email}\">". $row['taskname'] ."</a></td>";
+        echo "<td align='center' width='200'><a href=\"UpdateTask.php?taskid={$row['cttask']}&owneremail={$row['oe']}&useremail={$email}\">". $row['taskname'] ."</a></td>";
         echo "<td align='center' width='200'>" . $row['taskcategory'] . "</td>";
         echo "<td align='center' width='200'>" . $row['taskdateandtime'] . "</td>";
         echo "<td align='center' width='200'>" . $row['status'] . "</td>";
@@ -118,7 +118,7 @@ if (isset($_POST['logout'])){
         echo $_POST['taskName'];
 
         echo "<div STYLE=\" height: 300px; width: auto; font-size: 18px; overflow: auto;\">";
-        $sql = 'select * , ct.taskid as cttask ,ct.owneremail as oe , count as bidcount  from create_task ct left join bidcount bc on ct.taskid = bc.taskid where ct.owneremail != '."'$email'"."AND ct.taskname ILIKE'%".$_POST['taskName']."%'"." order by count asc";
+        $sql = 'select * , ct.taskid as cttask ,ct.owneremail as oe , count as bidcount  from create_task ct left join bidcount bc on ct.taskid = bc.taskid where ct.owneremail != '."'$email'"." AND ct.status = "."'open'"." AND ct.taskname ILIKE'%".$_POST['taskName']."%'"." order by count asc";
         echo "<table>";
         echo "<tr>";
         echo "<th align='center' width='200'>Owner Email</th>";
