@@ -4,6 +4,12 @@
 session_start();
 $email=$_SESSION["userEmail"];
 $name=$_SESSION["userName"];
+
+//Authentication check
+if($email==""){
+    header("Location: index.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 

@@ -7,6 +7,13 @@ $taskId= $_GET['taskid'];
 
 $ownerEmail= $_GET['owneremail'];
 $username= $_GET['username'];
+
+//Authentication check
+if($ownerEmail==""){
+    header("Location: index.php");
+    exit;
+}
+
 try {
     $dbuser = 'postgres';
     $dbpass = 'password';

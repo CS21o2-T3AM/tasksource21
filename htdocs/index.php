@@ -32,11 +32,16 @@ $row    = pg_fetch_assoc($result);		// To store the result row
 if (isset($_POST['submit'])) {
     $serverPassword = $row[password];
     $inputPassword = $_POST['inputPassword'];
+    $isAdmin = $row[admin];
 
     $_SESSION['userName']= $row[name];
     $_SESSION['userEmail'] = $row[email];
 
-    if($inputPassword==$serverPassword){
+    if($isAdmin=="t" && $inputPassword==$serverPassword ){
+        header("Location: admin.php");
+        exit;
+    }
+    else if($inputPassword==$serverPassword){
         header("Location: home.php");
         exit;
     }

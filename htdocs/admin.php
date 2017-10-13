@@ -7,6 +7,12 @@ $name=$_SESSION["userName"];
 echo $name."<br/>";
 date_default_timezone_set("Asia/Singapore");
 echo "Today " . date("d/m/Y h:i:sa"). "<br/>";
+
+//Authentication check
+if($email==""){
+    header("Location: index.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <head>
@@ -16,7 +22,7 @@ echo "Today " . date("d/m/Y h:i:sa"). "<br/>";
 </head>
 <body>
 <h1>Admin Control Panel</h1>
-<h2>Welcome back, Administrator!</h2>
+<h2>Welcome back, <?php$name?>!</h2>
 <form name="home" action="home.php" method="POST">
     <li><input type="submit" name="logout" value="Logout" style="position: absolute; right: 0;"/></li>
 </form>

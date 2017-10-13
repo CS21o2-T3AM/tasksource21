@@ -7,7 +7,14 @@ $name=$_SESSION["userName"];
 echo $name."<br/>";
 date_default_timezone_set("Asia/Singapore");
 echo "Today " . date("d/m/Y h:i:sa"). "<br/>";
+
+//Authentication check
+if($email==""){
+    header("Location: index.php");
+    exit;
+}
 ?>
+
 <!DOCTYPE html>
 <head>
     <title>Home Page</title>
