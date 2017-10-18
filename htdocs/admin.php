@@ -1,5 +1,5 @@
 <?php
-// Use session to pass infomation such as email.
+// Use session to pass information such as email.
 //Note input validation not done yet
 session_start();
 $email=$_SESSION["userEmail"];

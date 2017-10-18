@@ -1,4 +1,4 @@
-//Create tables
+/* Create tables */
 
 CREATE TABLE users(
 email VARCHAR(64)PRIMARY KEY,
@@ -34,4 +34,4 @@ PRIMARY KEY(ownerEmail, taskId, bidderEmail),
 FOREIGN KEY(ownerEmail, taskId) REFERENCES create_task(ownerEmail,taskId)
 );
 
-Create View bidCount As Select count(b.*), b.taskid,b.owneremail  From bid_task b Group by b.taskid,b.owneremail; 
+Create View bidCount As Select count(b.*), b.taskid,b.owneremail ï¿½From bid_task b Group by b.taskid,b.owneremail; 
