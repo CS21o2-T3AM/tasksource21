@@ -124,8 +124,14 @@ if (isset($_POST['submit'])) {
             } else {
                 echo "Insert failed. Please try again later";
             }
+
         } else {
             $userId_err = "A user with the same email already exists";
+        }
+
+        /// close the connection to database
+        if (isset($dbh)) {
+            pg_close($dbh);
         }
 
     }
