@@ -10,7 +10,9 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Register</title>
+    <title>Register to Tasksource21!</title>
+
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
 
 </head>
 
@@ -138,73 +140,74 @@ if (isset($_POST['submit'])) {
 }
 
 ?>
-
+<?php
+    include_once '../utils/navbar.html';
+?>
     <div class="container">
 
-        <div class="row">
+        <div class="row align-items-center">
 
-            <div>
+            <div class="col-5 offset-1">
+                <div class="text-center"><h2>Register</h2></div>
+                <hr>
 
-                <div><hr></div>
+                <form action="" method="POST">
 
-                <div><h2>Register</h2></div>
+                    <div class="form-group row">
+                    <label class="form-control-label" for="name">Name: </label>
+                    <input class="form-control" type="text" id="name" name="name" value="<?php echo $name;?>" placeholder="Your full name">
+                    <span class="error text-danger"><?php echo $name_err;?></span>
+                    </div>
 
-                <div><hr></div>
+                    <div class="form-group row">
+                    <label class="form-control-label" for="userid">Email: </label>
+                    <input class="form-control" type="email" id="email" name="userid" value="<?php echo $email;?>" placeholder="enter email">
+                    <span class="error text-danger"><?php echo $userId_err;?></span>
+                    </div>
+
+                    <div class="form-group row">
+                    <label class="form-control-label" for="password">Password: </label>
+                    <input class="form-control" id="password" type="password" name="password"/>
+                    <span class="error text-danger"><?php echo $password_err;?></span>
+                    </div>
+
+                    <div class="form-group row">
+                    <label class="form-control-label" for="confirm_pass">Confirm password: </label>
+                    <input class="form-control" id="confirm_pass" type="password" name="confirm" />
+                    <span class="error text-danger"><?php echo $confirm_pass_err;?></span>
+                    </div>
+
+                    <div class="form-group row">
+                    <label class="form-control-label" for="dob">Date of Birth: </label>
+                    <input class="form-control" id="dob" type="date" name="dob" value="<?php echo $dob;?>">
+                    <span class="error text-danger"><?php echo $dob_err;?></span>
+                    </div>
+
+                    <div class="form-group row">
+                    <label class="form-control-label" for="contact">Contact number: </label>
+                    <input class="form-control" type="tel" id="contact" name="contact" value="<?php echo $contact;?>" placeholder="phone number">
+                    <span class="error text-danger"><?php echo $contact_err;?></span>
+                    </div>
+
+                    <div class="form-group row">
+                    <input class="btn btn-primary" type="submit" name="submit" value="Submit"/>
+                    </div>
+                </form>
 
             </div>
 
+            <div class="col-5 display-5">
+                <p class="text-center">Already a user?  <a href="index.php" >Login here</a>
+            </div>
         </div>
 
-        <div class="row">
-
-            <!-- contact form -->
-
-            <form action="" method="POST">
-
-                <div class="col-lg-3">
-
-                    <br />
-
-                </div>
-
-                <li>Enter Email: <input type="email" name="userid" value=<?php echo $email;?>>
-                <span class="error"><?php echo $userId_err;?></span></li>
-                <br/><div></div>
-
-                <li>Enter Password: <input type="password" name="password" />
-                <span class="error"><?php echo $password_err;?></span></li>
-                <br/><div></div>
-
-                <li>Enter re-Password: <input type="password" name="confirm" />
-                <span class="error"><?php echo $confirm_pass_err;?></span></li>
-                <br/><div></div>
-
-                <li>Date Of Birth: <input type="date" name="dob" value=<?php echo $dob;?>>
-                <span class="error"><?php echo $dob_err;?></span> </li>
-                <br/><div></div>
-
-                <li>Enter Name: <input type="text" name="name" value=<?php echo $name;?>>
-                <span class="error"><?php echo $name_err;?></span></li>
-                <br/><div></div>
-
-                <li>Contact Number: <input type="tel" name="contact" value=<?php echo $contact;?>>
-                <span class="error"><?php echo $contact_err;?></span></li>
-                <br/><div></div>
-
-                <li><input type="submit" name="submit" value="Submit"/></li>
-
-                <div>
-
-                    <br /><br /><p class="text-center">Back to <a href="index.php" >Login</a>
-
-                </div>
-
-            </form>
-
-        </div>
 
     </div>
 
+    <!--    make sure this order is correct, and placed near the end of body tag-->
+    <script type="text/javascript" src="../js/jquery-3.1.1.slim.min.js"></script>
+    <script type="text/javascript" src="../js/tether.min.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
 
 </body>
 

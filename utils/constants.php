@@ -9,3 +9,6 @@ define('NAME', 'name', false);
 define('CONTACT', 'contact', false);
 define('ADMIN', 'admin', false);
 define('EMAIL', 'email', false);
+
+// this is the random token generated after the user logs in successfully and is set as cookie
+define('TOKEN', 'token', false);

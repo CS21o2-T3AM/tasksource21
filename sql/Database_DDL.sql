@@ -1,7 +1,7 @@
 /* Create tables */
 
 CREATE TABLE users(
-email VARCHAR(64)PRIMARY KEY,
+email VARCHAR(64) PRIMARY KEY,
 password VARCHAR(20) NOT NULL,
 name VARCHAR(50) NOT NULL,
 dateOfBirth DATE,
