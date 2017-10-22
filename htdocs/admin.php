@@ -113,7 +113,7 @@ if (isset($_POST['logout'])){
         foreach ($connec->query($sql) as $row)
         {
             echo "<tr>";
-            echo "<td align='center' width='200'><a href=\"CreateBid.php?taskid={$row['taskid']}&owneremail={$row['owneremail']}&useremail={$email}\">".$row['email']."</a></td>";
+            echo "<td align='center' width='200'><a href=\"adminuser.php?targetuseremail={$row['email']}&useremail={$email}\">".$row['email']."</a></td>";
             echo "<td align='center' width='200'>" . $row['name'] . "</td>";
             echo "<td align='center' width='200'>" . $row['dateofbirth'] . "</td>";
             echo "<td align='center' width='200'>" . $row['admin'] . "</td>";
@@ -178,7 +178,7 @@ if (isset($_POST['logout'])){
         foreach ($connec->query($sql) as $row)
         {
             echo "<tr>";
-            echo "<td align='center' width='200'><a href=\"CreateBid.php?taskid={$row['taskid']}&owneremail={$row['owneremail']}&useremail={$email}\">".$row['taskname']."</a></td>";
+            echo "<td align='center' width='200'><a href=\"adminbid.php?taskid={$row['taskid']}&owneremail={$row['owneremail']}&useremail={$email}\">".$row['taskname']."</a></td>";
             echo "<td align='center' width='200'>" . $row['taskcategory'] . "</td>";
             echo "<td align='center' width='200'>" . $row['taskdateandtime'] . "</td>";
             echo "<td align='center' width='200'>" . $row['status'] . "</td>";
@@ -222,7 +222,7 @@ if (isset($_POST['logout'])){
         {
             echo "<tr>";
             echo "<td align='center' width='200'>" . $row['owneremail'] . "</td>";
-            echo "<td align='center' width='200'><a href=\"CreateBid.php?taskid={$row['taskid']}&owneremail={$row['owneremail']}&useremail=$email\">". $row['taskname'] ."</a></td>";
+            echo "<td align='center' width='200'><a href=\"admintask.php?taskid={$row['taskid']}&owneremail={$row['owneremail']}&useremail=$email\">". $row['taskname'] ."</a></td>";
             echo "<td align='center' width='200'>" . $row['taskcategory'] . "</td>";
             echo "<td align='center' width='200'>" . $row['taskdateandtime'] . "</td>";
             echo "<td align='center' width='200'>" . $row['status'] . "</td>";
