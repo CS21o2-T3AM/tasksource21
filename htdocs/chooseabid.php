@@ -1,7 +1,7 @@
 <?php
     session_start();
-    require_once '../utils/login.php';
-    if (login_validate() === false) {
+    require_once '../utils/login.inc.php';
+    if (login_validate_or_redirect() === false) {
         header('index.php');
         exit;
     }
@@ -23,7 +23,7 @@
 
 $taskID= $_GET['taskid'];
 
-require_once '../utils/db_con.php';
+require_once '../utils/db_con.inc.php';
 
 $statement = 'selecting the bid';
 $query = 'SELECT * FROM bid_task WHERE bidstatus = \'selected\' AND taskid = $1';

@@ -1,18 +1,6 @@
 <?php
-// Use session to pass infomation such as email.
-//Note input validation not done yet
-session_start();
-$email=$_SESSION["userEmail"];
-$name=$_SESSION["userName"];
-echo $name."<br/>";
-date_default_timezone_set("Asia/Singapore");
-echo "Today " . date("d/m/Y h:i:sa"). "<br/>";
-
-//Authentication check
-if($email==""){
-    header("Location: index.php");
-    exit;
-}
+require_once '../utils/login.inc.php';
+login_validate_or_redirect();
 ?>
 
 <!DOCTYPE html>
@@ -36,7 +24,7 @@ if (isset($_POST['Addtask'])){
     //pass email and username to next page
     $_SESSION['userName'] = $name;
     $_SESSION['userEmail'] = $email;
-    header("Location: CreateTask.php"); //send user to the next page
+    header("Location: create_task.php"); //send user to the next page
     exit;
 }
 if (isset($_POST['logout'])){

@@ -19,40 +19,35 @@
 <body>
 
 <?php
-
-session_start();
-
 // initialize form inputs and error messages
-$email = $password = $dob = $name = $contact = '';
-$userId_err = $password_err = $confirm_pass_err = $dob_err = $name_err = $contact_err = '';
+$email = $password = $name = $contact = '';
 
 if (isset($_POST['submit'])) {
-    $field_empty_format = "%s cannot be empty";
     $isAllDataValid = true;
 
     // ========== define all the constants ========== //
-    require_once('../utils/constants.php');
+    require_once('../utils/constants.inc.php');
 
-    // ========== checking userID/email ========== //
-    if (empty($_POST[USER_ID])) {
-        $userId_err = sprintf($field_empty_format, 'email');
+    // ========== checking email ========== //
+    if (empty($_POST[EMAIL])) {
+        $email_err = '';
         $isAllDataValid = false;
     } else {
-        $email = htmlspecialchars($_POST[USER_ID]);
+        $email = htmlspecialchars($_POST[EMAIL]);
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             // if valid email
             $isAllDataValid = false;
-            $userId_err = 'Provided email is invalid';
+            $email_err = 'Provided email is invalid';
         }
     }
 
     // ============ checking password, and that it satisfies the password format ========== //
     if (empty($_POST[PASSWORD])) {
-        $password_err = sprintf($field_empty_format, PASSWORD);
+        $password_err = true;
         $isAllDataValid = false;
     } else {
         if (empty($_POST[PASS_CONFIRM])) {
-            $confirm_pass_err = sprintf($field_empty_format, 'confirm password field');
+            $confirm_pass_err = '';
             $isAllDataValid = false;
         } else {
             if ($_POST[PASSWORD] === $_POST[PASS_CONFIRM]) {
@@ -64,42 +59,30 @@ if (isset($_POST['submit'])) {
         }
     }
 
-    // ============ checking date of birth ========== //
-    if (empty($_POST[DATE_OF_BIRTH])) {
-        $dob_err = sprintf($field_empty_format, 'date of birth');
-        $isAllDataValid = false;
-    } else {
-        $dob = htmlspecialchars($_POST[DATE_OF_BIRTH]);
-    }
-
-    // name field
+    // ============ checking the name number ========== //
     if (empty($_POST[NAME])) {
-        $name_err = sprintf($field_empty_format, NAME);
+        $name_err = true;
         $isAllDataValid = false;
     } else {
-        $name = $_POST[NAME];
+        $name = htmlspecialchars($_POST[NAME]);
     }
 
     // ============ checking the contact number ========== //
     if (empty($_POST[CONTACT])) {
-        $contact_err = sprintf($field_empty_format, CONTACT);
+        $contact_err = '';
         $isAllDataValid = false;
     } else {
-        $contact = $_POST[CONTACT];
+        if (!is_numeric($_POST[CONTACT])) {
+            $contact_err = 'Contact number must not include non-digit characters';
+        } else {
+            $contact = intval($_POST[CONTACT]);
+        }
     }
-
-    // in PHP we cannot do things like this (early return for error checking).
-    // Either use functions, or include files within which you can return early (returning inside included
-    // files will return the control back to the caller
-
-//    if ($isAllDataValid === false) {
-//        die;
-//    }
 
     if ($isAllDataValid === true) {
         $is_user_exists = false;
 
-        require_once('../utils/db_con.php');
+        require_once('../utils/db_con.inc.php');
 
         $statement = 'checking for duplicate user';
         $query = 'SELECT * FROM users WHERE email=$1';
@@ -112,36 +95,31 @@ if (isset($_POST['submit'])) {
         if ($result !== false && pg_numrows($result) === 0) {
             $statement = 'inserting new user';
 
-            $query = 'INSERT INTO users (email, password, name, dateOfBirth, admin, phone) VALUES ($1, $2, $3, $4, $5, $6)';
+            $query = 'INSERT INTO users (email, password, name, admin, phone) VALUES ($1, $2, $3, $4, $5)';
             $result = pg_prepare($dbh, $statement, $query);
 
-            $params = array($email, $password, $name, $dob, 'false', $contact);
+            $params = array($email, $password, $name, 'FALSE', $contact);
             $result = pg_execute($dbh, $statement, $params);
 
             if ($result !== false) { // don't check $result===true as if successful, does NOT return a boolean
-                $_SESSION['userName'] = $name;
-                $_SESSION['userEmail'] = $email;
-                header("Location: home.php"); //send user to his/her homepage
-                exit;
+                require_once '../utils/login.inc.php';
+                set_session_and_redirect($email, false);
             } else {
                 echo "Insert failed. Please try again later";
             }
 
         } else {
-            $userId_err = "A user with the same email already exists";
+            $email_err = "A user with the same email already exists";
         }
 
-        /// close the connection to database
-        if (isset($dbh)) {
-            pg_close($dbh);
-        }
-
+    } else {
+        $general_form_err = 'One or more mandatory fields are not set and/or contains invalid values';
     }
 }
 
 ?>
 <?php
-    include_once '../utils/navbar.html';
+    include_once '../utils/navbar.php';
 ?>
     <div class="container">
 
@@ -153,45 +131,42 @@ if (isset($_POST['submit'])) {
 
                 <form action="" method="POST">
 
-                    <div class="form-group row">
-                    <label class="form-control-label" for="name">Name: </label>
-                    <input class="form-control" type="text" id="name" name="name" value="<?php echo $name;?>" placeholder="Your full name">
-                    <span class="error text-danger"><?php echo $name_err;?></span>
+                    <div class="form-group row <?php echo isset($name_err)? 'has-danger' : ''?>">
+                        <label class="form-control-label" for="name">Name: </label>
+                        <input class="form-control <?php echo isset($name_err)? 'form-control-danger' : '' ?>" type="text" id="name" name="name" value="<?php echo $name;?>" placeholder="Your full name">
                     </div>
 
-                    <div class="form-group row">
-                    <label class="form-control-label" for="userid">Email: </label>
-                    <input class="form-control" type="email" id="email" name="userid" value="<?php echo $email;?>" placeholder="enter email">
-                    <span class="error text-danger"><?php echo $userId_err;?></span>
+                    <div class="form-group row <?php echo isset($email_err)? 'has-danger' : ''?>">
+                        <label class="form-control-label" for="email">Email: </label>
+                        <input class="form-control <?php echo isset($email_err)? 'form-control-danger' : ''?>" type="email" id="email" name="email" value="<?php echo $email;?>" placeholder="enter email">
+                        <span class="error text-danger"><?php echo !empty($email_err)? $email_err : ''?></span>
                     </div>
 
-                    <div class="form-group row">
-                    <label class="form-control-label" for="password">Password: </label>
-                    <input class="form-control" id="password" type="password" name="password"/>
-                    <span class="error text-danger"><?php echo $password_err;?></span>
+                    <div class="form-group row <?php echo isset($password_err)? 'has-danger' : ''?>">
+                        <label class="form-control-label" for="password">Password: </label>
+                        <input class="form-control <?php echo !empty($password_err)? 'form-control-danger' : ''?>" id="password" type="password" name="password"/>
                     </div>
 
-                    <div class="form-group row">
-                    <label class="form-control-label" for="confirm_pass">Confirm password: </label>
-                    <input class="form-control" id="confirm_pass" type="password" name="confirm" />
-                    <span class="error text-danger"><?php echo $confirm_pass_err;?></span>
+                    <div class="form-group row <?php echo isset($confirm_pass_err)? 'has-danger' : ''?>">
+                        <label class="form-control-label" for="confirm_pass">Confirm password: </label>
+                        <input class="form-control <?php echo isset($confirm_pass_err)? 'form-control-danger' : ''?>" id="confirm_pass" type="password" name="confirm" />
+                        <span class="error text-danger"><?php echo !empty($confirm_pass_err)? $confirm_pass_err: '';?></span>
                     </div>
 
-                    <div class="form-group row">
-                    <label class="form-control-label" for="dob">Date of Birth: </label>
-                    <input class="form-control" id="dob" type="date" name="dob" value="<?php echo $dob;?>">
-                    <span class="error text-danger"><?php echo $dob_err;?></span>
-                    </div>
-
-                    <div class="form-group row">
+                    <div class="form-group row <?php echo isset($contact_err)? 'has-danger' : ''?>">
                     <label class="form-control-label" for="contact">Contact number: </label>
-                    <input class="form-control" type="tel" id="contact" name="contact" value="<?php echo $contact;?>" placeholder="phone number">
-                    <span class="error text-danger"><?php echo $contact_err;?></span>
+                    <input class="form-control <?php echo isset($contact_err)? 'form-control-danger' : ''?>" type="tel" id="contact" name="contact" value="<?php echo $contact;?>" placeholder="phone number">
+                    <span class="error text-danger"><?php echo !empty($contact_err)? $contact_err: '';?></span>
+                    </div>
+
+                    <div class="row text-danger">
+                    <?php echo !empty($general_form_err) ? $general_form_err : ''?>
                     </div>
 
                     <div class="form-group row">
                     <input class="btn btn-primary" type="submit" name="submit" value="Submit"/>
                     </div>
+
                 </form>
 
             </div>
