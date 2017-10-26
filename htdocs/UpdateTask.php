@@ -1,12 +1,15 @@
 <?php
+session_start();
+require_once '../utils/login.inc.php';
+if (login_validate_or_redirect() === false) {
+    header('index.php');
+    exit;
+}
 
 $taskId= $_GET['taskid'];
-
 $ownerEmail= $_GET['owneremail'];
-
-$db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=password");
-
 ?>
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -14,13 +17,13 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
 <head>
 
     <meta charset="utf-8">
-
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
 
     <title>Task</title>
 </head>
+
 <body>
 <div class="container">
 
@@ -40,7 +43,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
 
     <div class="row">
         <?php
-
+        require_once '../utils/db_con.inc.php';
         $result = pg_query($db, "SELECT c.*, u.name, b.count FROM (create_task c Inner Join users u On c.owneremail = u.email) 
                                       Left Join bidCount b ON c.owneremail = b.owneremail AND c.taskid=b.taskid 
                                       where c.owneremail = '$ownerEmail'AND c.taskid = '$taskId'");
@@ -50,9 +53,10 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
         if($bidcount==NULL){
             $bidcount = 0;
         }
-        echo "
 
-       <div><h3>Task informtion</h3></div>
+        ?>
+
+       <div><h3>Task information</h3></div>
 
        <form name='Information' action=".'UpdateTask.php?taskid='."$taskId&owneremail=$ownerEmail method='POST' >  
     	
@@ -148,7 +152,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
                                     biddingClose='$EndBid', taskCategory =  '$taskCat' where c.taskid = '$taskId' And c.owneremail= '$ownerEmail'");
                if($result4){
                     $_SESSION['userName'] = $name;
-                    $_SESSION['userId'] = $email;
+                    $_SESSION['userId'] = $userId;
                     header("Location: home.php");
                     exit;
                 }
@@ -168,7 +172,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
 
                 if($result2 && $result3)
                     $_SESSION['userName'] = $name;
-                    $_SESSION['userId'] = $email;
+                    $_SESSION['userId'] = $userId;
                     header("Location: home.php");
                     exit;
 
@@ -180,7 +184,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
 
         if (isset($_POST['back'])){
             $_SESSION['userName'] = $name;
-            $_SESSION['userId'] = $email;
+            $_SESSION['userId'] = $userId;
             header("Location: home.php");
             exit;
         }
@@ -192,5 +196,11 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
     </div>
 
 </div>
+
+<!--    make sure this order is correct, and placed near the end of body tag-->
+<script type="text/javascript" src="../js/jquery-3.1.1.slim.min.js"></script>
+<script type="text/javascript" src="../js/tether.min.js"></script>
+<script type="text/javascript" src="../js/bootstrap.min.js"></script>
 </body>
+
 </html>
