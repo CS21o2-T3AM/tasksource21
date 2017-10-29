@@ -1,24 +1,14 @@
 <?php
-//require_once '../utils/login.inc.php';
-//login_validate_or_redirect();
-//
-//if (empty($_GET[TASK_ID])) {
-//    header('Location: home.php');
-//    exit;
-//}
-//require_once '../utils/constants.inc.php';
-//require_once '../utils/db_con.inc.php';
-//$task_array = get_task_by_id($dbh, $_GET[TASK_ID]);
-//if ($task_array === false) {
-//    header('Location: home.php'); // set message
-//    exit;
-//}
+require_once '../utils/login.inc.php';
+login_validate_or_redirect();
+require_once '../utils/db_con.inc.php';
+require_once '../utils/db_func.inc.php';
+$task_array = get_task_array_or_redirect($dbh);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,56 +17,97 @@
 </head>
 
 <?php
-    // the task attributes can be accessed from here
-//    $task_desc = $task_array(DB_DESC);
-//    $task_name = $task_array(DB_NAME);
-//    $task_address = $task_array(DB_ADDRESS);
-//    $task_postal_code = $task_array(DB_POSTAL_CODE);
-//    $task_owner = $task_array(DB_OWNER);
-//    $task_bidding_deadline = $task_array(DB_BIDDING_DEADLINE);
-//    $task_category = $task_array(DB_CATEGORY);
-//    $task_start_dt = $task_array(DB_START_DT);
-//    $task_end_dt = $task_array(DB_END_DT);
-//    $task_price = $task_array(DB_PRICE);
-//    $task_status = $task_array(DB_STATUS);
-//
+    // the task attributes stored in the database
+    $task_desc = $task_array[DB_DESC];
+    $task_name = $task_array[DB_NAME];
+    $task_address = $task_array[DB_ADDRESS];
+    $task_postal_code = $task_array[DB_POSTAL_CODE];
+    $task_owner = $task_array[DB_OWNER];
+    $task_category = $task_array[DB_CATEGORY];
+    $task_start_dt = $task_array[DB_START_DT];
+    $task_end_dt = $task_array[DB_END_DT];
+    $task_price = $task_array[DB_SUGGESTED_PRICE];
+    $task_status = $task_array[DB_STATUS];
+    $bidding_deadline = $task_array[DB_BIDDING_DEADLINE];
+
 //    // check if the user has voted, what is the winning bid etc.
 //    // the first row is the winner, and this can be coloured
-//    $top_biddings = get_bids_for_task($dbh, $_GET[TASK_ID], 3);
-    $task_desc = 'this task is about ....';
-    $task_name = 'Clean a ship';
-    $task_address = 'Clean a ship';
-    $task_postal_code = 'Clean a ship';
-    $task_owner = 'Clean a ship';
-//    $task_bidding_deadline = $task_array(DB_BIDDING_DEADLINE);
-    $task_category = 'Clean a ship';
-    $task_start_dt = 'Clean a ship';
-    $task_end_dt = 'Clean a ship';
-    $task_price = 'Clean a ship';
-    $task_status = 'Clean a ship';
+    require_once '../utils/constants.inc.php';
+    $task_id = $_GET[TASK_ID];
+    $user_email = $_SESSION[EMAIL];
 
-    // check if the user has voted, what is the winning bid etc.
-    // the first row is the winner, and this can be coloured
-//    $top_biddings = get_bids_for_task($dbh, $_GET[TASK_ID], 3);
+    $top_biddings = get_bids_for_task($dbh, $_GET[TASK_ID], 3);
+
+    $bid_err = '';
+    if (isset($_POST['submit'])) {
+        if (!isset($_POST[BID])) {
+            $bid_err = 'Please set the bid amount';
+        } else {
+            $bid = htmlspecialchars($_POST[BID]);
+            if (!is_numeric($bid)) {
+                $bid_err = 'Please enter valid bid amount';
+            } else {
+                $bid = floatval($bid);
+                $bid = bid_for_task($dbh, $user_email, $task_id, $bid);
+                if ($bid === false) {
+                    $bid_err = 'Insertion into the database was unsuccessful';
+                }
+            }
+        }
+    }
+
+    // show different UI depending on the state of the task
+    if ($task_status === STATUS_OPEN) {
+        if ($task_owner === $user_email) {
+            $edit_button = "<div class=\"col-1 mr-5 \">
+                            <a class=\"btn btn-primary\" href=\"edit_task.php?task_id=$task_id\">Edit</a>
+                            </div>";
+        } else {
+            $user_bid = find_user_bid_for_task($dbh, $user_email, $task_id);
+        }
+        $bidding_deadline_html = "<div class=\"m-2 text-warning\">Bidding deadline: $bidding_deadline</div>";
+
+    } else if ($task_status === STATUS_BIDDING_CLOSED && $task_owner === $user_email) {
+        // the owner should now decide the winner
+        $choose_winner_button = "<div class=\"col-1 mr-5 \">
+                            <a class=\"btn btn-primary\" href=\"choose_bid.php?task_id=$task_id\">Choose winner</a>
+                            </div>";
+
+    } else if ($task_status === STATUS_ASSIGNED) {
+        $assigned_user_email = get_assigned_user($dbh, $task_id);
+    } else {
+        // closed
+        $assigned_user_email = get_assigned_user($dbh, $task_id);
+        if ($assigned_user_email === false) {
+            unset($assigned_user_email); // unset so that it won't be shown
+            $closed_message = "<span class=\"text-danger\">The bidding for this task is closed</span>";
+        }
+    }
 ?>
 
 <body>
 <?php
-    include_once '../utils/navbar.php';
+    include_once '../utils/html_parts/navbar.php';
 ?>
 
 <div class="container">
-    <div class="row m-2" id="wrapper">
+    <div class="row m-2 mt-3" id="wrapper">
 
-        <div class="col-7" id="task_details">
+        <div class="col-6" id="task_details">
             <div class="row">
-                <div class="col-11">
+                <div class="col">
                     <h2><?php echo $task_name?></h2>
                     <hr>
                 </div>
 
+                <?php
+                    if(isset($edit_button))
+                        echo $edit_button;
+                ?>
+
                 <div class="col-11">
                     <h4>Posted by <?php echo $task_owner?></h4>
+
                 </div>
 
                 <div class="col-11">
@@ -117,45 +148,49 @@
             </div> <!-- row wrapper -->
         </div> <!-- task details -->
 
-        <div class="col-4">
-
+        <div class="col-5">
 
             <div class="row">
-                <div class="text-center">
-                    <h3>Bidding</h3>
+                <div class="col">
+                    <h3 class="text-center">Bidding</h3><hr>
                 </div>
                 <?php
-                    create_bidding_table($top_biddings);
+                    require_once '../utils/html_parts/bid_table.php';
+                    if ($user_email === $task_owner) {
+                        echo_bidding_table_for_owner($top_biddings);
+                    } else {
+                        echo_bidding_table_for_bidder($top_biddings, $user_email);
+                    }
                 ?>
-
-
             </div>
 
             <div class="row">
-                <form action="" method="POST">
+                <?php
+                    require_once '../utils/html_parts/bid_form.php';
+                    if (isset($bidding_deadline_html))
+                        echo $bidding_deadline_html;
 
-                    <fieldset about="Bidding">
-                        <div class="form-group  <?php echo isset($bid_err)? 'has-danger' : ''?>">
-                            <label class="form-control-label" for="bid">Bid for this task: </label>
-                            <div class="input-group">
-                                <span class="input-group-addon">$</span><input class="form-control <?php echo isset($bid)? 'form-control-danger' : ''?>" type="number" step="0.01" id="bid" name="bid" value="<?php echo $bid;?>" placeholder="Place your bid">
-                                <span class="error text-danger"><?php echo !empty($bid_err)? $bid_err : ''?></span>
-                            </div>
-                        </div>
+                    if (isset($user_bid)) {
+                        echo_bid_form($bid_err);
+                        echo_user_bid($user_bid);
+                    }
 
-                    </fieldset> <!--bidding-->
+                    if (isset($closed_message)) {
+                        echo $closed_message;
+                    }
 
-                    <div class="row text-danger">
-                        <?php echo isset($general_form_err) ? $general_form_err : ''?>
-                    </div>
+                    if (isset($assigned_user_email)) {
+                        echo_assigned_user($assigned_user_email, $task_owner);
+                    }
 
-                    <div class="form-group center">
-                        <input class="btn btn-primary" type="submit" name="submit" value="Submit"/>
-                    </div>
-                </form>
-            </div> <!-- form row -->
+                    if (isset($choose_winner_button)) {
+                        echo $choose_winner_button;
+                    }
 
-        </div> <!-- form column -->
+                ?>
+            </div> <!-- row -->
+
+        </div> <!-- column -->
 
 
     </div> <!-- wrapper row -->

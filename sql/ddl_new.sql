@@ -1,88 +1,92 @@
-/* Create tables
-  @author Yoshi
-*/
-
-/*TODO: need to specify CASCADING, password hashing */
+/* tables */
 
 CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  email VARCHAR(64) UNIQUE NOT NULL,
-  password CHARACTER(128) NOT NULL, /*hashed pass*/
+  email VARCHAR(64) PRIMARY KEY,
+  password_hash CHARACTER(256) NOT NULL, /*hashed password*/
   name VARCHAR(50) NOT NULL,
-  phone VARCHAR(10) NOT NULL,
-  is_admin BOOLEAN
+  phone CHARACTER(8) NOT NULL, /* Singapore handphone */
+  is_admin BOOLEAN DEFAULT false
 );
 
 CREATE TABLE task_categories (
-  id INTEGER PRIMARY KEY,
-  name VARCHAR(32) UNIQUE NOT NULL,
+  name VARCHAR(32) PRIMARY KEY,
   description VARCHAR(100) NOT NULL
 );
+/*Minor Repair, House Cleaning, Home Improvement, Furniture Assembly, Moving and Packing*/
 
+/* This enum will fall under "Types" in pgAdmin window */
 CREATE TYPE TASK_STATUS AS ENUM (
-  'pending', 'bid_confirmed', 'completed'
+  'open', 'bidding_closed', 'assigned', 'closed'
 );
 
 CREATE TABLE tasks (
   id SERIAL PRIMARY KEY,
   name VARCHAR(50) NOT NULL,
-  owner_id INTEGER NOT NULL,
+  owner_email VARCHAR(64) NOT NULL,
   description VARCHAR(1024) NOT NULL,
-  category_id INTEGER NOT NULL,
+  category VARCHAR(32) NOT NULL,
 
-  postal_code INTEGER NOT NULL,
+  postal_code CHARACTER(6) NOT NULL, /* Singapore postal code */
   address VARCHAR(100) NOT NULL,
 
   start_datetime TIMESTAMP WITH TIME ZONE NOT NULL,
   end_datetime TIMESTAMP WITH TIME ZONE NOT NULL,
 
   /* bidding related */
-  price MONEY NOT NULL,
-  status TASK_STATUS NOT NULL DEFAULT 'pending',
-  bidding_deadline TIMESTAMP WITH TIME ZONE, /*NULL if not set by deadline*/
+  suggested_price MONEY NOT NULL, /* suggested as in owner sets up a price for user reference */
+  status TASK_STATUS NOT NULL DEFAULT 'open',
+  bidding_deadline TIMESTAMP WITH TIME ZONE NOT NULL, /*NULL if not set by deadline*/
 
   /* For ordering display. Order created can be inferred from id*/
-  datetime_updated TIMESTAMP WITH TIME ZONE NOT NULL,
+  datetime_updated TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
 
-  FOREIGN KEY (category_id) REFERENCES task_categories(id),
-  FOREIGN KEY (owner_id) REFERENCES users(id),
-  CHECK (start_datetime <= end_datetime)
+  FOREIGN KEY (category) REFERENCES task_categories(name) ON DELETE CASCADE ,
+  FOREIGN KEY (owner_email) REFERENCES users(email) ON DELETE CASCADE ,
+  CHECK (bidding_deadline < start_datetime),
+  CHECK (start_datetime <= end_datetime),
+  CHECK (suggested_price >= cast(0 as money))
 );
 
 CREATE TABLE task_ratings (
-  task_id INTEGER PRIMARY KEY,
-  owner_rating INTEGER,
-  doer_rating INTEGER,
-  CHECK (owner_rating in (NULL, 1, 2, 3, 4, 5)), /*NULL means not chosen*/
-  CHECK (doer_rating in (NULL, 1, 2, 3, 4, 5))
+  task_id INTEGER,
+  user_email VARCHAR(64),
+  rating INTEGER,
+  role VARCHAR(6), /*Tasker (Task owner) or Doer (Task Winning Bidder)*/
+  CHECK (rating in (1, 2, 3, 4, 5)), /*NULL means not chosen*/
+  CHECK (role in ('tasker', 'doer')),
+  FOREIGN KEY (user_email) REFERENCES users(email) ON DELETE CASCADE,
+  FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+  PRIMARY KEY(task_id, user_email)
 );
 
 CREATE TABLE bid_task (
-bidder INTEGER,
-task_id INTEGER,
-bid_amount MONEY NOT NULL,
-bid_time TIMESTAMP WITH TIME ZONE NOT NULL,
-is_winner BOOLEAN NOT NULL DEFAULT FALSE,
-FOREIGN KEY (bidder) REFERENCES users(id),
-FOREIGN KEY (task_id) REFERENCES tasks(id)
+  bidder_email VARCHAR(64),
+  task_id INTEGER,
+  bid_amount MONEY NOT NULL,
+  bid_time TIMESTAMP WITH TIME ZONE NOT NULL,
+  is_winner BOOLEAN NOT NULL DEFAULT FALSE,
+  FOREIGN KEY (bidder_email) REFERENCES users(email) ON DELETE CASCADE ,
+  FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+  PRIMARY KEY (task_id, bidder_email),
+  CHECK(bid_amount > cast(0 as money))
 );
 
-/* User ratings as task doers. Use WHERE clause to filter out users by email*/
-CREATE VIEW taskowner_avg_ratings AS
-SELECT AVG(*), t.owner_rating
-FROM task_ratings t
-GROUP BY t.owner_rating;
+/* VIEWS */
 
-/* User ratings as task owners Use WHERE clause to filter out users by email*/
-CREATE VIEW taskdoer_avg_ratings AS
-SELECT AVG(*), t.doer_rating
-FROM task_ratings t
-GROUP BY t.doer_rating;
+/* User ratings as task doers. Use WHERE clause to filter out users by email */
+CREATE VIEW tasker_avg_ratings AS
+  SELECT AVG(t.rating) AS rating, t.user_email AS user_email
+  FROM task_ratings t
+  WHERE role = 'tasker'
+  GROUP BY t.user_email;
 
-/* The user can see how much he has earned so far */
-CREATE VIEW total_earned AS
-SELECT SUM(b.bid_amount), b.bidder
-FROM bid_task b
-WHERE is_winner = TRUE
-GROUP BY b.bidder;
+CREATE VIEW doer_avg_ratings AS
+  SELECT AVG(t.rating) AS rating, t.user_email AS user_email
+  FROM task_ratings t
+  WHERE role = 'doer'
+  GROUP BY t.user_email;
 
+CREATE VIEW bid_count AS
+  SELECT count(b.*), b.task_id
+  FROM bid_task AS b
+  GROUP BY b.task_id;

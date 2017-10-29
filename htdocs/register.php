@@ -3,17 +3,12 @@
 <html lang="en">
 
 <head>
-
     <meta charset="utf-8">
-
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>Register to Tasksource21!</title>
 
     <link rel="stylesheet" href="../css/bootstrap.min.css">
-
 </head>
 
 <body>
@@ -80,26 +75,14 @@ if (isset($_POST['submit'])) {
     }
 
     if ($isAllDataValid === true) {
-        $is_user_exists = false;
+        require_once '../utils/db_con.inc.php';
+        require_once '../utils/db_func.inc.php';
 
-        require_once('../utils/db_con.inc.php');
-
-        $statement = 'checking for duplicate user';
-        $query = 'SELECT * FROM users WHERE email=$1';
-
-        $result = pg_prepare($dbh, $statement, $query);
-
-        $params = array($email);
-        $result = pg_execute($dbh, $statement, $params);
-
-        if ($result !== false && pg_numrows($result) === 0) {
-            $statement = 'inserting new user';
-
-            $query = 'INSERT INTO users (email, password, name, admin, phone) VALUES ($1, $2, $3, $4, $5)';
-            $result = pg_prepare($dbh, $statement, $query);
-
-            $params = array($email, $password, $name, 'FALSE', $contact);
-            $result = pg_execute($dbh, $statement, $params);
+        if (check_user_not_exist($dbh, $email) === true) {
+            require_once '../utils/db_func.inc.php';
+            $password_hash = hash('sha256', $password, false);
+            $params = array($email, $password_hash, $name, $contact);
+            $result = insert_new_user($dbh, $params);
 
             if ($result !== false) { // don't check $result===true as if successful, does NOT return a boolean
                 require_once '../utils/login.inc.php';
@@ -107,11 +90,9 @@ if (isset($_POST['submit'])) {
             } else {
                 echo "Insert failed. Please try again later";
             }
-
         } else {
             $email_err = "A user with the same email already exists";
         }
-
     } else {
         $general_form_err = 'One or more mandatory fields are not set and/or contains invalid values';
     }
@@ -119,18 +100,18 @@ if (isset($_POST['submit'])) {
 
 ?>
 <?php
-    include_once '../utils/navbar.php';
+    include_once '../utils/html_parts/navbar.php';
 ?>
     <div class="container">
 
         <div class="row align-items-center">
 
-            <div class="col-5 offset-1">
-                <div class="text-center"><h2>Register</h2></div>
-                <hr>
+            <div class="col-5 offset-1 mt-2">
 
                 <form action="" method="POST">
 
+                    <fieldset about="register">
+                        <legend class="text-center">Register</legend>
                     <div class="form-group row <?php echo isset($name_err)? 'has-danger' : ''?>">
                         <label class="form-control-label" for="name">Name: </label>
                         <input class="form-control <?php echo isset($name_err)? 'form-control-danger' : '' ?>" type="text" id="name" name="name" value="<?php echo $name;?>" placeholder="Your full name">
@@ -158,6 +139,8 @@ if (isset($_POST['submit'])) {
                     <input class="form-control <?php echo isset($contact_err)? 'form-control-danger' : ''?>" type="tel" id="contact" name="contact" value="<?php echo $contact;?>" placeholder="phone number">
                     <span class="error text-danger"><?php echo !empty($contact_err)? $contact_err: '';?></span>
                     </div>
+
+                    </fieldset>
 
                     <div class="row text-danger">
                     <?php echo !empty($general_form_err) ? $general_form_err : ''?>

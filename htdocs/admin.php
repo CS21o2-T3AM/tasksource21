@@ -1,18 +1,4 @@
 <?php
-// Use session to pass information such as email.
-//Note input validation not done yet
-session_start();
-$email=$_SESSION["userEmail"];
-$name=$_SESSION["userName"];
-echo $name."<br/>";
-date_default_timezone_set("Asia/Singapore");
-echo "Today " . date("d/m/Y h:i:sa"). "<br/>";
-
-//Authentication check
-if($email==""){
-    header("Location: index.php");
-    exit;
-}
 ?>
 <!DOCTYPE html>
 <head>
@@ -28,12 +14,6 @@ if($email==""){
 </form>
 
 <?php
-
-if (isset($_POST['logout'])){
-    //pass email and username to next page
-    header("Location: index.php"); //send user to the next page
-    exit;
-}
 ?>
 <style>
     table {
