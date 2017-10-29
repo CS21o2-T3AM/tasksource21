@@ -6,7 +6,7 @@ $_SESSION[EMAIL] = "admin@gmail.com";
 $_SESSION[PASSWORD]='password';
 $_SESSION[NAME]='Jon Snow';
 
-$email=$_SESSION[EMAIL];
+$email=$_SESSION["EMAIL"];
 $name=$_SESSION[NAME];
 
 //Authentication check
@@ -14,7 +14,6 @@ $name=$_SESSION[NAME];
 //    header("Location: index.php");
 //    exit;
 //}
-
 ?>
 <!DOCTYPE html>
 
@@ -83,15 +82,13 @@ $name=$_SESSION[NAME];
 
     <!-- Menu -->
     <div  align='right' class='container' id="wrapper" style="">
-        <div class='btn-group btn-group-lg' role="group">
-           <a href="admin.php" class="btn btn-default active">Users</a>
-           <a href="admintasks.php" class="btn btn-default">Tasks</a>
-           <a href="adminbids.php" class="btn btn-default">Bids</a>
+        <div class='btn-group btn-group-lg' role="group"    >
+            <a href="admin.php" class="btn btn-default">Users</a>
+            <a href="admintasks.php" class="btn btn-default">Tasks</a>
+            <a href="adminbids.php" class="btn btn-default active">Bids</a>
 
             <a href="admincategories.php" class="btn btn-warning ">Task Categories</a>
         </div>
-
-
     </div>
 
     <?php
@@ -115,67 +112,78 @@ $name=$_SESSION[NAME];
         exit;
     }
 
-    //DISPLAY All USERS
-
-    echo "<h2>User Accounts</h2>";
-    //Search Bar
-    echo "<form name='searchUsers' action='' method='POST'>";
-    echo   "<br/> <small>Search Users (Email/ Name)</small><br/>";
-    echo      "<input type='text' name='userName' value='' style=''/>";
-    echo    "<button type='submit' name='searchUsers' value='Search' ><span class='glyphicon glyphicon-search'></span></button>";
-    echo"</form>";
-
-
+      //DISPLAY ALL BIDS
+    echo"<div class='container' name='bids-wrapper' id='bids-wrapper' class='main-content' >";
+    echo "<h2>Bids</h2>";
+    echo "<form name='searchBids' action='' method='POST'>";
+    echo   "<br/> <small>Search Bids (Bidder's Email/ Task Name)</small><br/>";
+    echo      "<input type='text' name='bidName' value=''/>";
+    echo     "<button type='submit' name='searchBids' value=''><span class='glyphicon glyphicon-search'></span></button>";
+    echo"</form><br/>";
     echo "<br/>";
 
-    $_POST['searchUsers'] = true;
-    if (isset($_POST['searchUsers'])) {
-        echo $_POST['userName'];
+    $_POST['searchBids'] = true;
+    if (isset($_POST['searchBids'])) {
+        echo $_POST['bidName'];
 
-        $userInput = $_POST['userName'];
-        //Dynamically display Tables
-
-        //Display all Users by default
-        $sql = 'select * from users';
+        $userInput = $_POST['bidName'];
+        //Dynamically display bids
+        echo "<div style='height: 300px; width: auto; font-size: 16px; overflow: auto;border:2px solid darkgray; border-radius:5px;''>";
+        //Display all by default
+        $sql = 'select * from bid_task bt, tasks  t where bt.task_id = t.id';
 
         if(strpos($userInput, '@')){
             //Search by email
             echo "Searching by Email: ".$userInput;
             //Query using ILIKE
-            $sql = 'select * from users where email ILIKE '."'%".$userInput."%'";
+            $sql = 'select * from bid_task bt, tasks t where bt.task_id = t.id '."AND bt.bidder_email ILIKE'%".$userInput."%'";
         }
         else if(!empty($userInput)){
             //Search by bidName
-            echo "Searching by User's Name: ".$userInput;
-            $sql = 'select * from users where name ILIKE '."'%".$userInput."%'";
+            echo "Searching by Bid Name: ".$userInput;
+            $sql = 'select * from bid_task bt, tasks t Where bt.task_id = t.id AND t.name ILIKE'."'%".$userInput."%'";
         }
         else{
             //If all else fails, display default
-            $sql = 'select * from users';
+            $sql = 'select * from bid_task bt, tasks t WHERE bt.task_id = t.id';
         }
 
-        echo "<div style='height: 300px; width: auto ; font-size: 16px; overflow: auto;border:2px solid darkgray; border-radius:5px;'>";
         echo "<table class='table table-bordered table-striped table-hover'>";
         echo "<tr>";
-        echo "<th align='center' width='100'>Email</th>";
-        echo "<th align='center' width='50'>Name</th>";
-        echo "<th align='center' width='20'>Phone</th>";
-        echo "<th align='center' width='5'>Admin</th>";
+        echo "<th align='center' width='200'>Task ID</th>";
+        echo "<th align='center' width='500'>Name</th>";
+        echo "<th align='center' width='200'>Bidder Email</th>";
+        echo "<th align='center' width='200'>Category</th>";
+        echo "<th align='center' width='200'>Start</th>";
+        echo "<th align='center' width='200'>End</th>";
+        echo "<th align='center' width='200'>Status</th>";
+        echo "<th align='center' width='200'>Bidding Deadline</th>";
+        echo "<th align='center' width='200'>Bid Amount</th>";
+        echo "<th align='center' width='200'>Bidded On</th>";
+        echo "<th align='center' width='200'>Winner</th>";
 
         foreach ($connec->query($sql) as $row)
         {
             echo "<tr>";
-            echo "<td align='center' width='100'><a href=\"adminuserdetail.php?targetuseremail={$row['email']}&useremail={$email}\">".$row['email']."</a></td>";
-            echo "<td align='center' width='50'>" . $row['name'] . "</td>";
-            echo "<td align='center' width='20'>" . $row['phone'] . "</td>";
-            echo "<td align='center' width='5'>" . $row['is_admin'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['task_id'] . "</td>";
+            echo "<td align='center' width='500'><a href=\"adminbiddetail.php?taskid={$row['id']}&owneremail={$row['owner_email']}&useremail={$email}\">".$row['name']."</a></td>";
+            echo "<td align='center' width='200'>" . $row['bidder_email'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['category'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['start_datetime'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['end_datetime'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['status'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['bidding_deadline'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['bid_amount'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['bid_time'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['is_winner'] . "</td>";
             echo "</tr>";}
 
         echo "</table>";
+        echo "</div>";
     }
-    echo "</div>";//user wrapper div
-    echo "<br/>";
-    echo "<br/>";
+
+    echo "</table>";
+    echo "</div>";//Bids wrapper div
 
     echo "<br/>";
     echo "<br/>";

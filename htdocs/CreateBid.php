@@ -23,7 +23,10 @@ if($userEmail==""){
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Viewing Bid</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+        <title>Make Bid</title>
     </head>
     <body>
     <div class="container">
@@ -34,7 +37,7 @@ if($userEmail==""){
 
                 <div><hr></div>
 
-                <div><h2>Viewing Bidding Information</h2></div>
+                <div><h2>Bid</h2></div>
 
                 <div><hr></div>
 
@@ -54,7 +57,7 @@ if($userEmail==""){
         $button="updateBid";
         $failed = $updateRow[bidstatus];
         if(strcmp($failed,'failed')==0){
-            $disable=true;
+            $disbale=true;
         }
     }
 
@@ -64,42 +67,33 @@ if($userEmail==""){
     $row    = pg_fetch_assoc($result);
     echo "
  
-       <div><h3>Task information</h3></div>
+       <div><h3>Task informtion</h3></div>
 
        <form name='Information' action=".'CreateBid.php?taskid='."$taskId&owneremail=$ownerEmail&useremail=$userEmail method='GET' >  
     	
-    	<table>
-    	<tr>
-    	<td>Task creator name:</td>
-    	<td><input type='text' name='ownername' value='$row[name]' ><td>
-    	</tr>
-    	
-    	<tr>
-    	<td>Task creator email:</td>
-    	<td><input type='text' name='owneremail' value='$row[owneremail]'  /></td>
-    	</tr>
-    	
-    	<tr>
-        <td>Task name:</td><td><input type='text' name='taskname' value='$row[taskname]'  /></td>
+    	<li>Task creator name:</li>  
+    	<li><input type='text' name='ownername' value='$row[name]' disabled/></li>  
     	<br/><div></div>
-    	</tr>
     	
-    	<tr>
-    	<td>Date and time of task:</td>
-    	<td><input type='text' name='date&time' value='$row[taskdateandtime]' /></td>
-    	</tr>
+    	<li>Task creator email:</li>  
+    	<li><input type='text' name='owneremail' value='$row[owneremail]'  disabled/></li>  
+    	<br/><div></div>
     	
-    	<tr>
-    	<td>Task description:</td>
-        <td><textarea name=\"taskDesc\"  style=\"width:400px; height:100px;\">$row[taskdesc]</textarea></td>
-        </tr>
+    	<li>Task name:</li><li><input type='text' name='taskname' value='$row[taskname]'  disabled/></li>  
+    	<br/><div></div>
+    	
+    	<li>Date and time of task:</li>  
+    	<li><input type='text' name='date&time' value='$row[taskdateandtime]' disabled/></li>  
+    	<br/><div></div>
+    	
+    	 <li>Enter a task description:</li>
+            <li><textarea name=\"taskDesc\" disabled style=\"width:400px; height:100px;\">$row[taskdesc]</textarea>
+            <br/><div></div>
             
-        <tr>
-       <td>Bidding Close Date:</td>
-    	<td><input type='text' name='date' value='$row[biddingclose]' /></td>
-        </tr>
+        <li>Bidding Close Date:</li>  
+    	<li><input type='text' name='date' value='$row[biddingclose]' disabled/></li>  
+    	<br/><div></div>   
     	
-    	</table>
     	</form>";
 
         date_default_timezone_set("Asia/Singapore");
@@ -171,7 +165,7 @@ if($userEmail==""){
             if (isset($_POST['back'])){
             $_SESSION['userName'] = $name;
             $_SESSION['userId'] = $email;
-            header("Location: admin.php");
+            header("Location: home.php");
             exit;
             }
 
