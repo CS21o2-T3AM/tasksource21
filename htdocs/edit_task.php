@@ -1,36 +1,52 @@
 <?php
 require_once '../utils/login.inc.php';
 login_validate_or_redirect();
+require_once '../utils/db_con.inc.php';
+require_once '../utils/db_func.inc.php';
+$task_array = get_task_array_or_redirect($dbh);
+if ($_SESSION[EMAIL] !== $task_array[DB_OWNER] || $task_array[DB_STATUS] !== STATUS_OPEN) {
+    // id does not exist or the user is not the owner or the task has already been bidded/assigned/completed
+    header('Location: home.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
 
 <html lang="en">
 <head>
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
-    <title>Create Task</title>
+    <title>Edit task</title>
 </head>
 
 <body>
 
 <?php
-require_once '../utils/constants.inc.php';
-require_once '../utils/db_func.inc.php';
 require_once '../utils/category_listing.inc.php';
-require_once '../utils/db_con.inc.php';
 
 $categories = get_task_categories($dbh);
-$task_name = $task_desc = $postal_code = $address = $category = $suggested_price = '';
-$user_email = $_SESSION[EMAIL];
 $php_to_html_date_format = 'Y-m-d\TH:i';
-
-// default values for time. Tomorrow, Day after tomorrow, two days after tommorow
-$bidding_deadline = new DateTime(); $bidding_deadline->add(new DateInterval('P1D'));
-$start_dt = new DateTime(); $start_dt->add(new DateInterval('P2D'));
-$end_dt = new DateTime(); $end_dt->add(new DateInterval('P3D'));
+$postgres_to_php_format = 'Y-m-d H:i:sP';
+$php_to_postgres_format = 'Y-m-d H:i:s';
+// get values from database first
+$task_desc = $task_array[DB_DESC];
+$task_id = $_GET[TASK_ID];
+$task_name = $task_array[DB_NAME];
+$address = $task_array[DB_ADDRESS];
+$postal_code = $task_array[DB_POSTAL_CODE];
+$task_owner = $task_array[DB_OWNER];
+$task_category = $task_array[DB_CATEGORY];
+$start_dt = DateTime::createFromFormat($postgres_to_php_format, $task_array[DB_START_DT]);
+//var_dump(DateTime::getLastErrors()); this will output array so you must use var_dump, not echo.
+$end_dt = DateTime::createFromFormat($postgres_to_php_format, $task_array[DB_END_DT]);
+$suggested_price = $task_array[DB_SUGGESTED_PRICE];
+$suggested_price = preg_replace("/[^0-9.]/", "", $suggested_price);
+$bidding_deadline = DateTime::createFromFormat($postgres_to_php_format, $task_array[DB_BIDDING_DEADLINE]);
+$user_email = $_SESSION[EMAIL];
 
 // make sure the selected categories is in the database
 if (isset($_POST['submit'])) {
@@ -79,8 +95,11 @@ if (isset($_POST['submit'])) {
             $category = $_POST[CATEGORY];
         } else {
             $isAllDataValid = false;
+            var_dump($categories);
+            echo $_POST[CATEGORY];
         }
     }
+
 
     /// time-related inputs ///
     $current_time = new DateTime();
@@ -131,7 +150,7 @@ if (isset($_POST['submit'])) {
         $bidding_deadline_err = true;
     }
 
-    if (empty($_POST[PRICE])) {
+    if (!isset($_POST[PRICE])) {
         $isAllDataValid = false;
         $price_err = '';
     } else {
@@ -149,17 +168,17 @@ if (isset($_POST['submit'])) {
     }
 
     if ($isAllDataValid === true) {
-        $php_to_postgres_format = 'Y-m-d H:i:s';
         $bidding_deadline = $bidding_deadline->format($php_to_postgres_format);
         $start_dt = $start_dt->format($php_to_postgres_format);
         $end_dt = $end_dt->format($php_to_postgres_format);
-        $params = array($task_name, $user_email, $task_desc, $category, $postal_code, $address, $start_dt, $end_dt, $suggested_price, $bidding_deadline);
-        $result = insert_new_task($dbh, $params);
+        $params = array($task_name, $user_email, $task_desc, $category, $postal_code,
+                        $address, $start_dt, $end_dt, $suggested_price, $bidding_deadline, $task_id);
+        $result = update_task($dbh, $params);
         if ($result !== false) {
-            header('Location: home.php'); // maybe some message to display?
+            header('Location: view_task.php?task_id='.$task_id); // maybe some message to display?
             exit;
         } else {
-            $general_form_err = 'Insertion into the database has failed. Please try again';
+            $general_form_err = 'Update to the database has failed. Please try again';
         }
     } else {
         $general_form_err = 'One or more mandatory fields contain invalid values';
@@ -171,12 +190,12 @@ if (isset($_POST['submit'])) {
 include_once '../utils/html_parts/navbar.php';
 ?>
 
-<div class="container mt-3">
+<div class="container">
 
     <div class="row align-items-center">
 
         <div class="col-9 offset-1">
-            <div class="text-center mt-4"><h2>Create a Task</h2></div>
+            <div class="text-center mt-4"><h2>Edit task</h2></div>
             <hr>
 
             <form action="" method="POST">
@@ -261,7 +280,7 @@ include_once '../utils/html_parts/navbar.php';
                                 <label class="form-control-label" for="price">Set a base price for this task: </label>
                                 <div class="input-group">
                                     <span class="input-group-addon">$</span>
-                                    <input  class="form-control <?php echo isset($suggested_price) ? 'form-control-danger' : '' ?>"
+                                    <input  class="form-control <?php echo isset($price_err) ? 'form-control-danger' : '' ?>"
                                             type="number" step="0.01" id="price" name="price"
                                             value="<?php echo $suggested_price; ?>"
                                             placeholder="Suggest a price">

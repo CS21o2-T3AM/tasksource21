@@ -21,31 +21,19 @@ if (isset($_POST['submit'])) {
     } else {
         // Connect to the database.
         require_once '../utils/db_con.inc.php';
-
-        // get the user info from db.
-        $statement = 'selecting user';
-        $query = 'SELECT * FROM users WHERE email = $1';
-
-        $result = pg_prepare($dbh, $statement, $query);
-        $params = array($_POST[EMAIL]);
-        $result = pg_execute($dbh, $statement, $params);
-
+        require_once '../utils/db_func.inc.php';
+        $result = check_user_login($dbh, $_POST[EMAIL], $_POST[PASSWORD]);
         if ($result === false)
             die("Connection to database failed");
 
-        $row = pg_fetch_assoc($result);
-
-        $server_password = $row[PASSWORD];
-        $input_password = $_POST[PASSWORD];
-        $is_admin = $row[ADMIN]; // this is boolean
-
-        if ($is_admin === true && $input_password === $server_password) {
+        if ($result === 2) { // admin
             require_once '../utils/login.inc.php';
             set_session_and_redirect($_POST[EMAIL], true);
-        } else if ($input_password === $server_password) {
+        } else if ($result === 1) { // normal user
             require_once '../utils/login.inc.php';
+            echo 'logged in';
             set_session_and_redirect($_POST[EMAIL], false);
-        } else {
+        } else { // user not registered
             $login_err = 'Incorrect username/password, please try again!';
         }
     }
@@ -53,16 +41,16 @@ if (isset($_POST['submit'])) {
 
 ?>
 <?php
-include_once '../utils/navbar.php';
+include_once '../utils/html_parts/navbar.php';
 ?>
 
     <div class="container">
         <div class="row justify-content-center">
 
-            <div class="col-5">
+            <div class="col-5 mt-5">
                 <form action="index.php" method="POST">
-                    <div class="text-center"><h2>Login</h2><br></div>
                     <fieldset about="Login">
+                        <legend class="text-center">Login</legend>
 
                     <div class="form-group">
                         <label for="email" class="form-control-label">Email:</label>
