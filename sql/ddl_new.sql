@@ -32,10 +32,12 @@ CREATE TABLE tasks (
   start_datetime TIMESTAMP WITH TIME ZONE NOT NULL,
   end_datetime TIMESTAMP WITH TIME ZONE NOT NULL,
 
+  /* no need for the status. open == bidding_deadline < now, bidding_closed = bidding_deadline > now & start_datetime < now,
+   assigned = bidding_closed & is_winner, closed = start_datetime > now. if is_winner = true then it was done, else not*/
   /* bidding related */
   suggested_price MONEY NOT NULL, /* suggested as in owner sets up a price for user reference */
   status TASK_STATUS NOT NULL DEFAULT 'open',
-  bidding_deadline TIMESTAMP WITH TIME ZONE NOT NULL, /*NULL if not set by deadline*/
+  bidding_deadline TIMESTAMP WITH TIME ZONE NOT NULL,
 
   /* For ordering display. Order created can be inferred from id*/
   datetime_updated TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),

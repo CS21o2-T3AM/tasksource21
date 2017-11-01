@@ -1,9 +1,10 @@
 <?php
 require_once '../utils/constants.inc.php';
-$navbar_register = $logged_in_as = $log_out = $search_task = $create_task = '';
+$navbar_register = $logged_in_as = $log_out = $search_task = $create_task = $home = '';
 $is_logged_in = isset($_SESSION[EMAIL]) && isset($_SESSION[LOGIN]);
 if ($is_logged_in !== false) {
-    $logged_in_as = '<span class="navbar-text mr-5">Logged in as'.$_SESSION[EMAIL].'</span>';
+    $logged_in_as = '<span class="navbar-text mr-5">logged in as <b>'.$_SESSION[EMAIL].'</b></span>';
+    $home = '<a class="nav-item nav-link" href="home.php">Home</a>';
     $log_out = '<a class="nav-item nav-link" href="logout.php">Log out</a>';
     $create_task = '<a class="nav-item nav-link" href="create_task.php">Create Task</a>';
     $search_task = '<a class="nav-item nav-link" href="search_task.php">Search Task</a>';
@@ -18,6 +19,7 @@ $navbar = <<<EOT
     <div class="container">
         <h2 class="navbar-brand">TaskSource21</h2>
         <div class="navbar-nav nav-tabs mr-auto">
+            $home
             $create_task
             $search_task
             $navbar_register

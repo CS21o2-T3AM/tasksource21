@@ -74,7 +74,10 @@ if (isset($_POST['submit'])) {
             $isAllDataValid = false;
             $postal_code_err = 'postal code must be numeric';
         } else {
-            $postal_code = intval($postal_code);
+            if (strlen($postal_code) !== 6) {
+                $isAllDataValid = false;
+                $postal_code_err = 'Postal code must be Singaporean 6-digit';
+            }
         }
     }
 

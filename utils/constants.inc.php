@@ -40,9 +40,11 @@ define('DB_SUGGESTED_PRICE', 'suggested_price', false);
 define('DB_STATUS', 'status', false);
 define('DB_BIDDING_DEADLINE', 'bidding_deadline', false);
 define('DB_BID_AMOUNT', 'bid_amount', false);
-define('DB_BID_DATE', 'bid_time', false);
+define('DB_BID_TIME', 'bid_time', false);
 define('DB_BIDDER', 'bidder_email', false);
 define('DB_RATING', 'rating', false);
+
+define('DB_DATE', 'date', false); // some generic field name to be assigned
 
 define('STATUS_CLOSED', 'closed', false);
 define('STATUS_OPEN', 'open', false);

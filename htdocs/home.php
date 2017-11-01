@@ -1,6 +1,6 @@
 <?php
-//require_once '../utils/login.inc.php';
-//login_validate_or_redirect();
+require_once '../utils/login.inc.php';
+login_validate_or_redirect();
 ?>
 
 <!DOCTYPE html>
@@ -17,14 +17,60 @@
 
 <body>
 <?php
+    require_once '../utils/html_parts/task_table.php';
+    require_once '../utils/db_con.inc.php';
+    require_once '../utils/db_func.inc.php';
 
 // Big search button to search for task
+    $user_email = $_SESSION[EMAIL];
 
-// Upcoming event: the tasks you are currently bidding, the tasks you are to complete ---> user
-// the task you posted as owner, the task you need to choose the winning bid for ---> owner
-// pass the task id to be able to click on them
+    $assigned_tasks = get_tasks_assigned($dbh, $user_email);
+    $bidding_tasks =  get_tasks_in_bidding($dbh, $user_email);
+    $completed_tasks = get_tasks_complete($dbh, $user_email);
+    $created_tasks = get_tasks_created($dbh, $user_email);
 
 ?>
+
+<?php
+include_once '../utils/html_parts/navbar.php';
+?>
+
+<div class="container mt-3 mb-4">
+
+    <div class="row align-items-center">
+        <div class="col-6 m-4">
+            <h2 class="">Bidding in progress</h2>
+            <?php
+                echo_table_bidding_tasks($bidding_tasks);
+            ?>
+        </div>
+
+        <div class="col-8 m-4">
+            <h2 class="">Assigned tasks</h2>
+
+            <?php
+            echo_table_assigned_tasks($assigned_tasks);
+            ?>
+        </div>
+
+        <div class="col-7 m-4">
+            <h2 class="">Created tasks</h2>
+            <?php
+                echo_table_created_tasks($created_tasks);
+            ?>
+        </div>
+
+        <div class="col-7 m-4">
+            <h2 class="mb-4">Your past activities</h2>
+            <?php
+                echo_table_completed_tasks($completed_tasks);
+            ?>
+
+        </div>
+
+    </div> <!-- row -->
+
+</div>
 
     <!--    make sure this order is correct, and placed near the end of body tag-->
     <script type="text/javascript" src="../js/jquery-3.1.1.slim.min.js"></script>

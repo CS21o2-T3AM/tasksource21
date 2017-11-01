@@ -24,19 +24,24 @@ $task_array = get_task_array_or_redirect($dbh);
     $task_postal_code = $task_array[DB_POSTAL_CODE];
     $task_owner = $task_array[DB_OWNER];
     $task_category = $task_array[DB_CATEGORY];
-    $task_start_dt = $task_array[DB_START_DT];
-    $task_end_dt = $task_array[DB_END_DT];
     $task_price = $task_array[DB_SUGGESTED_PRICE];
     $task_status = $task_array[DB_STATUS];
-    $bidding_deadline = $task_array[DB_BIDDING_DEADLINE];
+
+    $bidding_deadline = new DateTime($task_array[BIDDING_DEADLINE]);
+    $bidding_deadline = $bidding_deadline->format('H:i d M Y');
+
+    $end_dt = new DateTime($task_array[DB_END_DT]);
+    $end_dt = $end_dt->format('H:i d M Y');
+
+    $start_dt = new DateTime($task_array[DB_START_DT]);
+    $start_dt = $start_dt->format('H:i d M Y');
 
 //    // check if the user has voted, what is the winning bid etc.
 //    // the first row is the winner, and this can be coloured
     require_once '../utils/constants.inc.php';
     $task_id = $_GET[TASK_ID];
     $user_email = $_SESSION[EMAIL];
-
-    $top_biddings = get_bids_for_task($dbh, $_GET[TASK_ID], 3);
+    $owner_rating = get_rating_as_owner($dbh, $task_owner);
 
     $bid_err = '';
     if (isset($_POST['submit'])) {
@@ -44,17 +49,23 @@ $task_array = get_task_array_or_redirect($dbh);
             $bid_err = 'Please set the bid amount';
         } else {
             $bid = htmlspecialchars($_POST[BID]);
-            if (!is_numeric($bid)) {
+            if (!is_numeric($bid) || $bid <= 0) {
                 $bid_err = 'Please enter valid bid amount';
             } else {
-                $bid = floatval($bid);
                 $bid = bid_for_task($dbh, $user_email, $task_id, $bid);
                 if ($bid === false) {
                     $bid_err = 'Insertion into the database was unsuccessful';
+                } else {
+                    $top_bids = get_bids_and_ratings($dbh, $_GET[TASK_ID], 3);
                 }
             }
         }
+    } else if (isset($_POST['withdraw'])) {
+        withdraw_bid($dbh, $user_email, $task_id);
     }
+
+    if (!isset($top_bids))
+        $top_bids = get_bids_and_ratings($dbh, $_GET[TASK_ID], 3);
 
     // show different UI depending on the state of the task
     if ($task_status === STATUS_OPEN) {
@@ -65,7 +76,7 @@ $task_array = get_task_array_or_redirect($dbh);
         } else {
             $user_bid = find_user_bid_for_task($dbh, $user_email, $task_id);
         }
-        $bidding_deadline_html = "<div class=\"m-2 text-warning\">Bidding deadline: $bidding_deadline</div>";
+        $bidding_deadline_html = "<div class=\"text-warning col-11\"><h5>Bidding deadline: $bidding_deadline</h5></div>";
 
     } else if ($task_status === STATUS_BIDDING_CLOSED && $task_owner === $user_email) {
         // the owner should now decide the winner
@@ -104,38 +115,39 @@ $task_array = get_task_array_or_redirect($dbh);
                     if(isset($edit_button))
                         echo $edit_button;
                 ?>
-
-                <div class="col-11">
-                    <h4>Posted by <?php echo $task_owner?></h4>
-
+                <hr>
+                <div class="col-11 mt-3">
+                    <h4>Posted by:</h4> <h5><?php echo $task_owner.": rating $owner_rating"?></h5>
                 </div>
 
-                <div class="col-11">
-                    Category: <?php echo $task_category?>
+                <div class="col-11 mt-3">
+                    <b>Category:</b> <?php echo $task_category?>
                 </div>
 
-                <div class="col-11">
-
-                    Price: <?php echo $task_price?>
+                <div class="col-11 mt-2">
+                    <b>Price: </b> <?php echo $task_price?>
+                    <hr>
                 </div>
 
-                <div class="col-11">
-                    <h4>Location</h4>
-                    <p> Postal Code:
+
+                <div class="col-11 mb-2">
+                    <h4 class="mt-1 mb-3">Location</h4>
+                    <p><b>Postal Code:</b>
                         <?php echo $task_postal_code?>
                     </p><!--postal code-->
 
                     <p>
-                        Address:
+                        <b>Address: </b>
                         <?php echo $task_address?>
                     </p> <!--addess-->
-
+                    <hr>
                 </div><!--location -->
 
                 <div class="col-11">
                     <h4>Date and Time</h4>
-                    <?php echo $task_start_dt?>
-                    <?php echo $task_end_dt?>
+                    <?php echo $start_dt?>
+                    <?php echo $end_dt?>
+                    <hr>
                 </div>
 
                 <div class="col-11 ">
@@ -148,31 +160,30 @@ $task_array = get_task_array_or_redirect($dbh);
             </div> <!-- row wrapper -->
         </div> <!-- task details -->
 
-        <div class="col-5">
-
+        <div class="col-6">
             <div class="row">
-                <div class="col">
-                    <h3 class="text-center">Bidding</h3><hr>
+                <div class="col-11">
+                    <h3 class="text-center mb-3">bidding board</h3>
                 </div>
+                <div class="col">
                 <?php
                     require_once '../utils/html_parts/bid_table.php';
-                    if ($user_email === $task_owner) {
-                        echo_bidding_table_for_owner($top_biddings);
-                    } else {
-                        echo_bidding_table_for_bidder($top_biddings, $user_email);
-                    }
+                    echo_bidding_board($top_bids);
                 ?>
+                </div>
             </div>
 
             <div class="row">
+                <div class="col">
                 <?php
                     require_once '../utils/html_parts/bid_form.php';
                     if (isset($bidding_deadline_html))
                         echo $bidding_deadline_html;
 
                     if (isset($user_bid)) {
-                        echo_bid_form($bid_err);
-                        echo_user_bid($user_bid);
+                        echo_bid_form($bid_err, $user_bid);
+                    } else {
+                        echo '<div class="text-success col-11 mt-3"><h5>You are the owner of this task!</h5></div>';
                     }
 
                     if (isset($closed_message)) {
@@ -188,10 +199,10 @@ $task_array = get_task_array_or_redirect($dbh);
                     }
 
                 ?>
+                </div>
             </div> <!-- row -->
 
         </div> <!-- column -->
-
 
     </div> <!-- wrapper row -->
 
