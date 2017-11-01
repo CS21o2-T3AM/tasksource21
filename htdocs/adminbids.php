@@ -120,7 +120,6 @@ $name=$_SESSION[NAME];
     echo      "<input type='text' name='bidName' value=''/>";
     echo     "<button type='submit' name='searchBids' value=''><span class='glyphicon glyphicon-search'></span></button>";
     echo"</form><br/>";
-    echo "<br/>";
 
     $_POST['searchBids'] = true;
     if (isset($_POST['searchBids'])) {

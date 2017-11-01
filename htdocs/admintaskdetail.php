@@ -65,6 +65,10 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
         $result = pg_query($db, "SELECT t.*, t.name AS tname, u.name AS uname, u.phone FROM tasks t INNER JOIN users u ON t.owner_email = u.email 
                                   WHERE t.owner_email = '$ownerEmail'AND t.id = '$taskId'");
         $row    = pg_fetch_assoc($result);
+
+        $categories_result = pg_query($db, "SELECT * FROM task_categories");
+       // $categories = pg_fetch_assoc($categories_result);
+
         echo "
 
 
@@ -87,7 +91,23 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
     	
 	    <tr>
     	<td>Category:</td>
-    	<td><input type='text' name='category' value='$row[category]' /></td>
+    	<!--<td><input type='text' name='category' value='$row[category]' /></td>-->
+    	<td>
+    	";
+
+        //Testing Drop Down List for Categories
+        $active = '';
+        echo"<select name='category_dropdown' id='category_dropdown''>";
+        while($row_categories=pg_fetch_assoc($categories_result)){
+            $active = '';
+            $display = $row_categories["name"];
+            if($display ==  $row[category]){$active='selected="selected"';}
+        echo"<option value = '$display' $active>$display</option>'";
+        }
+        echo"</select>";
+
+        echo"
+        </td>
     	</tr>
     	
     	<tr>
@@ -168,7 +188,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
         if (isset($_POST['updateTask'])){
             $taskId = $_POST['taskId'];
             $tname = $_POST['tname'];
-            $category = $_POST['category'];
+            $category = $_POST['category_dropdown'];
             $description = $_POST['description'];
             //$startdatetime = $_POST['startdatetime'];
              // $enddatetime = $_POST['enddatetime'];
@@ -196,6 +216,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
                 echo "<script>alert('An error has occured, please try again later.');</script>";
             }
             parent.window.location.reload();
+            echo "<meta http-equiv='refresh' content='0'>";
         }
 
         //Delete Task Button Clicked

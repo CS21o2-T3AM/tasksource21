@@ -66,7 +66,6 @@ $name=$_SESSION[NAME];
                 <button type="submit" name="logout" style="background-color:white; color:grey; border-radius: 5px;  align-content: center; vertical-align: middle;">Log Out</button>
             </form>
         </div>
-
     </div>
 </nav>
 

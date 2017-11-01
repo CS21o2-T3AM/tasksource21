@@ -42,7 +42,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
         </div>
 
         <!--Menu Items-->
-        <div style='float: right;'>
+        <div style='float: right; margin-right:10px; margin-top: 18px' >
             <form name="home" action="index.php" method="POST">
                 <button type="submit" name="logout" style="background-color:white; color:grey; border-radius: 5px;  align-content: center; vertical-align: middle;">Log Out</button>
             </form>
@@ -90,7 +90,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
     	
     	<tr>
     	<td>Description:</td>
-    	<td><textarea name='description' value='' style='; background-color: transparent' >$row[description]</textarea></td>
+    	<td><textarea name='description' value='' style='background-color: transparent; width:600px; height:200px' >$row[description]</textarea></td>
     	</tr>
     	    	
 
