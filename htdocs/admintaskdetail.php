@@ -171,8 +171,8 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
     	
     	<div class='container' align='right'>
     	    <button type='submit' class='btn-default' name='back' id='back' >Back</button>
-    	    <button type='submit' class='btn-danger' name='deleteBid' id='deleteBid'>Delete Bid</button>
-    	    <button type='submit' class='btn-success' name='updateBid' id='updateBid'>Update Bid</button>
+    	    <button type='submit' class='btn-danger' name='deleteTask' id='deleteTask'>Delete Task</button>
+    	    <button type='submit' class='btn-success' name='updateTask' id='updateTask'>Update Task</button>
         </div>
         </form>   
             	
