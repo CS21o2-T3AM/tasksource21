@@ -32,7 +32,7 @@ $categories = get_task_categories($dbh);
 $php_to_html_date_format = 'Y-m-d\TH:i';
 $postgres_to_php_format = 'Y-m-d H:i:sP';
 $php_to_postgres_format = 'Y-m-d H:i:s';
-// get values from database first
+
 $task_desc = $task_array[DB_DESC];
 $task_id = $_GET[TASK_ID];
 $task_name = $task_array[DB_NAME];
@@ -41,7 +41,7 @@ $postal_code = $task_array[DB_POSTAL_CODE];
 $task_owner = $task_array[DB_OWNER];
 $task_category = $task_array[DB_CATEGORY];
 $start_dt = DateTime::createFromFormat($postgres_to_php_format, $task_array[DB_START_DT]);
-//var_dump(DateTime::getLastErrors()); this will output array so you must use var_dump, not echo.
+
 $end_dt = DateTime::createFromFormat($postgres_to_php_format, $task_array[DB_END_DT]);
 $suggested_price = $task_array[DB_SUGGESTED_PRICE];
 $suggested_price = preg_replace("/[^0-9.]/", "", $suggested_price);

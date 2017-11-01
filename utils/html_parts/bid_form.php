@@ -47,11 +47,11 @@ function echo_assigned_user($assigned_user_email, $task_owner_email) {
     $assigned = $assigned_user_email;
     if ($assigned_user_email === $current_user_email) {
         $assigned = 'you!';
-    } else if ($assigned_user_email !== $task_owner_email) {
+    } else {
         // if not the task owner, don't show who won it
-        $assigned = 'another user';
+        $assigned = $assigned_user_email;
     }
-    $message = "<span class=\"error text-success\">This task is assigned to $assigned</span>";
+    $message = "<span class=\"error text-success\">This task was assigned to $assigned</span>";
     echo $message;
 
 }

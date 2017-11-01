@@ -20,6 +20,7 @@ login_validate_or_redirect();
     require_once '../utils/html_parts/task_table.php';
     require_once '../utils/db_con.inc.php';
     require_once '../utils/db_func.inc.php';
+//    TODO: run_update_function($dbh);
 
 // Big search button to search for task
     $user_email = $_SESSION[EMAIL];

@@ -45,6 +45,8 @@ define('DB_BIDDER', 'bidder_email', false);
 define('DB_RATING', 'rating', false);
 
 define('DB_DATE', 'date', false); // some generic field name to be assigned
+define('DB_AVG', 'avg', false);
+define('DB_COUNT', 'count', false);
 
 define('STATUS_CLOSED', 'closed', false);
 define('STATUS_OPEN', 'open', false);

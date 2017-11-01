@@ -1,7 +1,7 @@
 <?php
 function echo_bidding_board($bids) {
     if(count($bids) === 0) {
-        echo '<div class="text-warning col-11 mt-3 mb-3"><h5>No bidding yet</h5></div>';
+        echo '<div class="text-warning col-11 mt-3 mb-3"><h5>No one has bid yet</h5></div>';
         return;
     }
 
@@ -9,8 +9,8 @@ function echo_bidding_board($bids) {
     $position = 1;
     $template = '<tr><th>%d</th><td>%s</td><td>%s</td><td>%s</td></tr>';
     foreach($bids as $bid) {
-        $rank = !empty($bid['avg']) ? $bid['avg'].'('.$bid['sum'].')'  : 'N/A';
-        $bid_data = sprintf($template, $position, $bid[DB_BID_AMOUNT], $bid[DB_BIDDER], $rank);
+        $rating = !empty($bid[DB_AVG]) ? sprintf('%.2f/5 (%d)', $bid[DB_AVG], $bid[DB_COUNT])  : 'N/A';
+        $bid_data = sprintf($template, $position, $bid[DB_BID_AMOUNT], $bid[DB_BIDDER], $rating);
         $table_data .= $bid_data;
         $position += 1;
     }
@@ -31,7 +31,8 @@ EOT;
 
 function echo_bidding_table_form($bids) {
     if(count($bids) === 0) {
-        echo '<div class="text-warning col-11 mt-3 mb-3">No bid was submitted for this task and this task is closed.</div>';
+        echo '<div class="text-danger col-11">No bid was submitted for this task. Click below to close this task';
+        echo '<form action="" method="POST"><input class="btn" type="submit" value="Close" name="close"></form></div>';
         return;
     }
 
@@ -39,8 +40,8 @@ function echo_bidding_table_form($bids) {
     $position = 1;
     $template = '<tr><th>%d</th><td>%s</td><td>%s</td><td>%s</td>';
     foreach($bids as $bid) {
-        $rank = !empty($bid['avg']) ? $bid['avg'].'('.$bid['sum'].')'  : 'N/A';
-        $bid_data = sprintf($template, $position, $bid[DB_BID_AMOUNT], $bid[DB_BIDDER], $rank);
+        $rating = !empty($bid[DB_AVG]) ? sprintf('%.2f/5 (%d)', $bid[DB_AVG], $bid[DB_COUNT])  : 'N/A';
+        $bid_data = sprintf($template, $position, $bid[DB_BID_AMOUNT], $bid[DB_BIDDER], $rating);
         $bid_data .= '<td><input type="radio" name="winner" value="'.urlencode($bid[DB_BIDDER]).'"></td></tr>';
         $table_data .= $bid_data;
         $position += 1;

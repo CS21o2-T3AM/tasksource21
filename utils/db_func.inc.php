@@ -2,6 +2,22 @@
 
 require_once 'constants.inc.php';
 
+function run_update_function($dbh) {
+    /* bidding_deadline reached (open) -> bidding_closed | closed */
+    $statement = 'run functions to update status';
+    $function1 = 'SELECT updatetaskstatus()';
+    $result = pg_prepare($dbh, $statement, $function1);
+    $params = array();
+    $result = pg_execute($dbh, $statement, $params);
+
+    /* task start_datetime reached (assigned | bidding_closed) -> closed */
+    $statement = 'run functions to close status';
+    $function2 = 'SELECT taskclose()';
+    $result = pg_prepare($dbh, $statement, $function2);
+    $params = array();
+    $result = pg_execute($dbh, $statement, $params);
+}
+
 function get_task_by_id($dbh, $task_id) {
     $statement = 'getting task with given $task_id';
     $query = 'SELECT t.name, t.description, t.postal_code, t.address, t.status, t.bidding_deadline,
@@ -43,9 +59,6 @@ function get_task_categories($dbh) {
     $params = array();
     $result = pg_execute($dbh, $statement, $params);
 
-    if ($result === false)
-        return false;
-
     $categories = array();
     while ($row = pg_fetch_row($result)) {
         $categories[] = $row[0];
@@ -68,7 +81,9 @@ function insert_new_task($dbh, $params) {
 }
 
 function update_task($dbh, $params) {
-    $statement = 'inserting the task into db';
+    if (count($params) !== 10)
+        return false;
+    $statement = 'update task info';
     $query = 'UPDATE tasks SET name = $1, owner_email = $2, description = $3, category = $4, postal_code = $5, address = $6,
               start_datetime = $7, end_datetime = $8, suggested_price = $9, bidding_deadline = $10
               WHERE id = $11';
@@ -87,8 +102,6 @@ function get_assigned_user($dbh, $task_id) {
     $params = array($task_id);
     $result = pg_execute($dbh, $statement, $params);
 
-    if ($result === false)
-        return false;
     if (pg_num_rows($result) === 0)
         return false;
 
@@ -97,7 +110,7 @@ function get_assigned_user($dbh, $task_id) {
 
 // =================================== for login/user related ====================================== //
 
-// returns false if database connection fails, 0 if no user, 1 if non-admin user, 2 if admin
+// returns 0 if no user, 1 if non-admin user, 2 if admin
 function check_user_login($dbh, $user_email, $password) {
     $password_hash = hash('sha256', $password, false);
     $statement = 'selecting user';
@@ -109,8 +122,6 @@ function check_user_login($dbh, $user_email, $password) {
     $result = pg_prepare($dbh, $statement, $query);
     $params = array($user_email, $password_hash);
     $result = pg_execute($dbh, $statement, $params);
-    if ($result === false)
-        return false;
     if (pg_num_rows($result) === 0)
         return 0;
     $is_admin = pg_fetch_assoc($result)[ADMIN];
@@ -137,13 +148,12 @@ function check_user_not_exist($dbh, $email) {
     $result = pg_prepare($dbh, $statement, $query);
     $params = array($email);
     $result = pg_execute($dbh, $statement, $params);
-    if ($result === false)
-        die('problem with database');
 
     return pg_numrows($result) === 0;
 }
 
 // =================================== for home.php ====================================== //
+
 function get_tasks_in_bidding($dbh, $user_id) {
     $statement = 'get tasks user is currently bidding for';
     $query = 'SELECT t.id, t.name, t.bidding_deadline
@@ -151,10 +161,9 @@ function get_tasks_in_bidding($dbh, $user_id) {
               WHERE t.id IN
               (SELECT b.task_id
               FROM bid_task b
-              WHERE b.bidder_email = $1
-              )
+              WHERE b.bidder_email = $1)
               AND t.bidding_deadline > now() AND t.status = \'open\'
-              ORDER BY t.bidding_deadline DESC';
+              ORDER BY t.bidding_deadline ASC';
     $result = pg_prepare($dbh, $statement, $query);
     $params = array($user_id);
     $result = pg_execute($dbh, $statement, $params);
@@ -182,7 +191,9 @@ function get_tasks_created($dbh, $user_id) {
               FROM tasks t2
               WHERE t2.owner_email = $1
               AND t2.start_datetime > now() AND t2.status = \'bidding_closed\'
-              ORDER BY date DESC';
+              ORDER BY date ASC';
+
+    // problem is that start_datetime > now() eliminates ones
 
     $result = pg_prepare($dbh, $statement, $query);
     $params = array($user_id);
@@ -205,9 +216,9 @@ function get_tasks_assigned($dbh, $user_id) {
               WHERE t.id IN
               (SELECT b.task_id
               FROM bid_task b
-              WHERE b.bidder_email = $1 AND is_winner = TRUE)
-              AND t.start_datetime > now()
-              ORDER BY t.start_datetime DESC';
+              WHERE b.bidder_email = $1 AND b.is_winner = TRUE)
+              AND t.start_datetime > now() AND t.status = \'assigned\'
+              ORDER BY t.start_datetime ASC';
     $result = pg_prepare($dbh, $statement, $query);
     $params = array($user_id);
     $result = pg_execute($dbh, $statement, $params);
@@ -228,23 +239,23 @@ function get_tasks_complete($dbh, $user_id) {
               FROM tasks t
               WHERE 
               (
-              /* task successfully bidded */
+              /* task successfully bidded by the user */
               t.id IN
               (SELECT b.task_id
               FROM bid_task b
               WHERE b.bidder_email = $1 AND is_winner = TRUE)
               
               /* or task created by the user for which there exists a s successful bidder*/
-              OR (
-              t.owner_email = $1
+              OR 
+              (t.owner_email = $1
               AND EXISTS (SELECT * FROM
               bid_task b2
               WHERE b2.task_id = t.id AND b2.is_winner = TRUE))
               )
               
-              /* either case, it has to be a past task */
-              AND t.start_datetime < now()
-              ORDER BY t.start_datetime DESC
+              /* either case, it has to be a closed task */
+              AND t.start_datetime < now() AND t.status = \'closed\'
+              ORDER BY date ASC
               ';
     $result = pg_prepare($dbh, $statement, $query);
     $params = array($user_id);
@@ -260,35 +271,24 @@ function get_tasks_complete($dbh, $user_id) {
     return $tasks;
 }
 
-function get_rating_as_owner($dbh, $user_id) {
-    $statement = 'get owner rating';
-    $query = 'SELECT AVG(r.rating)
+function get_user_rating($dbh, $user_id, $role) {
+    if ($role !== 'owner' && $role !== 'doer')
+        return false;
+
+    $statement = 'get user rating';
+    $query = 'SELECT AVG(r.rating) AS avg, COUNT(r.rating) AS count
               FROM task_ratings r
-              WHERE r.user_email = $1 AND r.role = \'doer\'
+              WHERE r.user_email = $1 AND r.role = $2
               GROUP BY r.user_email';
     $result = pg_prepare($dbh, $statement, $query);
-    $params = array($user_id);
+    $params = array($user_id, $role);
     $result = pg_execute($dbh, $statement, $params);
-    if ($result === false)
-        return false;
+
     if (pg_num_rows($result) === 0)
         return 'N/A';
 
-    return pg_numrows($result)[DB_RATING];
-}
-
-function get_rating_as_doer($dbh, $user_id) {
-    // can get rating as well as the denominator (number of ratings given)
-    $statement = 'get owner rating';
-    $query = 'SELECT r.rating
-              FROM doer_avg_rating r 
-              WHERE r.user = $1';
-    $result = pg_prepare($dbh, $statement, $query);
-    $params = array($user_id);
-    $result = pg_execute($dbh, $statement, $params);
-    if ($result === false)
-        return false;
-    return pg_numrows($result)[DB_RATING];
+    $row = pg_fetch_assoc($result);
+    return sprintf('%.2f/5 (%d)', $row[DB_AVG], $row[DB_COUNT]);
 }
 
 // =================================== bidding related ====================================== //
@@ -299,10 +299,10 @@ function get_bids_and_ratings($dbh, $task_id, $limit) {
         $limit_query = ' LIMIT $2';
     }
     $statement = 'get all bidding information for $task_id';
-    $query = 'SELECT b.bid_amount, b.bid_time, b.bidder_email, avg_rating.avg, avg_rating.sum
+    $query = 'SELECT b.bid_amount, b.bid_time, b.bidder_email, avg_rating.avg, avg_rating.count
                   FROM bid_task b
                   LEFT JOIN 
-                  (SELECT AVG(r.rating) AS avg, SUM(r.rating) AS sum, r.user_email
+                  (SELECT AVG(r.rating) AS avg, COUNT(r.rating) AS count, r.user_email
                   FROM task_ratings r 
                   GROUP BY r.user_email) AS avg_rating
                   ON avg_rating.user_email = b.bidder_email
@@ -343,8 +343,8 @@ function withdraw_bid($dbh, $user_id, $task_id) {
 function bid_for_task($dbh, $user_email, $task_id, $bid_amount) {
     $statement = 'check if bid already exists';
     $query = 'SELECT *
-              FROM bid_task WHERE
-              bidder_email = $1 AND task_id = $2';
+              FROM bid_task 
+              WHERE bidder_email = $1 AND task_id = $2';
     $result = pg_prepare($dbh, $statement, $query);
     $params = array($user_email, $task_id);
     $result = pg_execute($dbh, $statement, $params);
@@ -362,7 +362,7 @@ function bid_for_task($dbh, $user_email, $task_id, $bid_amount) {
         // insert
         $statement = 'insert new bid for task';
         $query = 'INSERT INTO bid_task (bidder_email, task_id, bid_amount, bid_time) 
-                  VALUES ($1, $2, $3, current_timestamp)';
+                  VALUES ($1, $2, $3, now())';
         $result = pg_prepare($dbh, $statement, $query);
         $params = array($user_email, $task_id, $bid_amount);
         $result = pg_execute($dbh, $statement, $params);
@@ -387,5 +387,36 @@ function find_user_bid_for_task($dbh, $user_email, $task_id) {
     }
 }
 
+function set_as_winner($dbh, $user_email, $task_id) {
+    $statement = 'set user as the winner';
+    $query = 'UPDATE bid_task
+              SET is_winner = TRUE
+              WHERE bidder_email = $1 AND task_id = $2';
 
+    $result = pg_prepare($dbh, $statement, $query);
+    $params = array($user_email, $task_id);
+    $result = pg_execute($dbh, $statement, $params);
+
+    $statement = 'update task status to assigned';
+    $query = 'UPDATE tasks
+              SET status = \'assigned\'
+              WHERE id = $1';
+    $result = pg_prepare($dbh, $statement, $query);
+    $params = array($task_id);
+    $result = pg_execute($dbh, $statement, $params);
+
+    return $result;
+}
+
+function close_task($dbh, $task_id) {
+    $statement = 'close task';
+    $query = 'UPDATE tasks
+              SET status = \'closed\'
+              WHERE id = $1';
+
+    $result = pg_prepare($dbh, $statement, $query);
+    $params = array($task_id);
+    $result = pg_execute($dbh, $statement, $params);
+    return $result;
+}
 

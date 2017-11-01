@@ -1,12 +1,10 @@
 <?php
-//require_once '../utils/login.inc.php';
-//login_validate_or_redirect();
+require_once '../utils/login.inc.php';
+login_validate_or_redirect();
 require_once '../utils/db_con.inc.php';
 require_once '../utils/db_func.inc.php';
 $task_array = get_task_array_or_redirect($dbh);
-if ($task_array[DB_OWNER] !== $_SESSION[EMAIL] ||
-    $task_array[DB_STATUS] !== STATUS_BIDDING_CLOSED ||
-    empty($_GET[TASK_ID])) {
+if ($task_array[DB_OWNER] !== $_SESSION[EMAIL] || $task_array[DB_STATUS] !== STATUS_BIDDING_CLOSED) {
     header('Location: home.php');
     exit;
 }
@@ -27,10 +25,19 @@ if ($task_array[DB_OWNER] !== $_SESSION[EMAIL] ||
 <?php
     $task_id = $_GET[TASK_ID];
 
-    $close_task_button = "<div class=\"col-1 mr-5 \">
-                            <a class=\"btn btn-primary\" href=\"edit_task.php?task_id=$task_id\">Edit</a>
-                            </div>";
-    $assign_button = "";
+    if (isset($_POST['submit'])) {
+        if (isset($_POST['winner'])) {
+            $winner_email = urldecode($_POST['winner']);
+            set_as_winner($dbh, $winner_email, $task_id);
+            header('Location: view_task.php?task_id='.$task_id);
+            exit;
+        }
+
+    } else if (isset($_POST['close'])) {
+        close_task($dbh, $task_id);
+        header('Location: home.php');
+        exit;
+    }
 
 ?>
 <?php
@@ -43,8 +50,7 @@ include_once '../utils/html_parts/navbar.php';
             <?php
                 require_once '../utils/html_parts/bid_table.php';
                 $bids = get_bids_and_ratings($dbh, $task_id, false);
-                echo_bidding_board($bids);
-                // provide option to either 1. choose a winner 2. close the task
+                echo_bidding_table_form($bids);
             ?>
         </div>
 

@@ -67,12 +67,13 @@ if (isset($_POST['submit'])) {
         $isAllDataValid = false;
         $contact_err = '';
     } else {
-        if (!is_numeric($_POST[CONTACT])) {
+        $contact = $_POST[CONTACT];
+        if (!is_numeric($contact)) {
             $contact_err = 'Contact number must not include non-digit characters';
         } else {
             if (strlen($contact) !== 8) {
                 $isAllDataValid = false;
-                $postal_code_err = 'Phone number must be Singaporean 8-digit';
+                $contact_err = 'Phone number must be Singaporean 8-digit';
             }
         }
     }

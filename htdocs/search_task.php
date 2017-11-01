@@ -1,6 +1,7 @@
 <?php
 //require_once '../utils/login.inc.php';
 //login_validate_or_redirect();
+//    TODO: run_update_function($dbh);
 ?>
 
 <!DOCTYPE html>

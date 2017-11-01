@@ -3,6 +3,7 @@ require_once '../utils/login.inc.php';
 login_validate_or_redirect();
 require_once '../utils/db_con.inc.php';
 require_once '../utils/db_func.inc.php';
+//    TODO: run_update_function($dbh);
 $task_array = get_task_array_or_redirect($dbh);
 ?>
 
@@ -41,7 +42,7 @@ $task_array = get_task_array_or_redirect($dbh);
     require_once '../utils/constants.inc.php';
     $task_id = $_GET[TASK_ID];
     $user_email = $_SESSION[EMAIL];
-    $owner_rating = get_rating_as_owner($dbh, $task_owner);
+    $owner_rating = get_user_rating($dbh, $task_owner, 'owner');
 
     $bid_err = '';
     if (isset($_POST['submit'])) {
@@ -182,7 +183,7 @@ $task_array = get_task_array_or_redirect($dbh);
 
                     if (isset($user_bid)) {
                         echo_bid_form($bid_err, $user_bid);
-                    } else {
+                    } else if (isset($edit_button)){
                         echo '<div class="text-success col-11 mt-3"><h5>You are the owner of this task!</h5></div>';
                     }
 
