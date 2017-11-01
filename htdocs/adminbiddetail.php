@@ -121,7 +121,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
     	    <table class='table table-bordered table-striped table-hover'>
     	        <tr><td>ID:</td><td><input type='text' name='taskid' value='$row[id]' style='background-color: transparent; border:none; ' readonly></td></tr>
     	        <tr><td>Name: </td><td><input type='text' name='taskname' value='$row[tname]' style='background-color: transparent; border:none; ' readonly></td></tr>
-    	        <tr><td>Email: </td><td><textarea type='text' name='taskdesc'  style='background-color: transparent; border:none; ' readonly>$row[description]</textarea></td></tr>
+    	        <tr><td>Description: </td><td><textarea type='text' name='taskdesc'  style='background-color: transparent; border:none; width:300px; height:100px;' readonly>$row[description]</textarea></td></tr>
     	        <tr><td>Start: </td><td><input type='text' name='tstartdate' value='$row[start_datetime]' style='background-color: transparent; border:none; ' readonly></td></tr>
     	        <tr><td>End: </td><td><input type='text' name='tenddate' value='$row[end_datetime]' style='background-color: transparent; border:none; ' readonly></td></tr>
     	        <tr><td>Suggested Price:</td><td><input type='text' name='suggestedprice' value='$row[suggested_price]' style='background-color: transparent; border:none; ' readonly></td></tr>
@@ -139,7 +139,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
     	    </table>
     	    
     	 
-    	        <div name='menu' align='right'>
+    	        <div name='menu' align='right' style='padding-left: 5px'>
     	            <button type='submit' class='btn-default' name='back' id='back' >Back</button>
     	            <button type='submit' class='btn-danger' name='deleteBid' id='deleteBid'>Delete Bid</button>
     	           <button type='submit' class='btn-success' name='updateBid' id='updateBid'>Update Bid</button>

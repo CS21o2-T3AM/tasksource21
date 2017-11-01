@@ -169,15 +169,11 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
         </table>
         </div>
     	
-    	<div class='container'>
-    	<table id='options'  cellpadding='5' align='right' >
-        <tr>  
-            <br/><br/>
-         <td><input type='submit' name='back' class='btn-default' value='Back'/></td>   
-        <td><input type='submit' name='deleteTask' class='btn-danger' value='Delete Task'/></td>
-         <td><input type='submit' name='updateTask' class='btn-success' value='Update Task'/></td>
-         </tr>    
-        </table>
+    	<div class='container' align='right'>
+    	    <button type='submit' class='btn-default' name='back' id='back' >Back</button>
+    	    <button type='submit' class='btn-danger' name='deleteBid' id='deleteBid'>Delete Bid</button>
+    	    <button type='submit' class='btn-success' name='updateBid' id='updateBid'>Update Bid</button>
+        </div>
         </form>   
             	
         </div>
