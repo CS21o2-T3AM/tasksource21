@@ -85,7 +85,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
     	
     	<tr>
     	<td>Description:</td>
-    	<td><textarea name='description' value='' style='; background-color: transparent' ></textarea></td>
+    	<td><textarea name='description' value='' style='; background-color: transparent; width:600px; height:200px' ></textarea></td>
     	</tr>
     	    	
 
@@ -102,7 +102,6 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
         <?php
         //Update Task Button clicked
         if (isset($_POST['addCategory'])){
-            echo $_POST["description"];
             $name = $_POST["name"];
             $description=$_POST["description"];
 
@@ -110,8 +109,13 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
 
             try {
                 $result3 = pg_query($db, "Insert into task_categories values ('$name','$description')");
-                echo "<script>alert('New Task Category successfully created!');</script>";
+
                 header("refresh:0");
+                if(empty($result3)){
+                    echo "<script>alert('An error has occured, please try again later!');</script>";
+                }else{
+                    echo "<script>alert('New Task Category successfully created!');</script>";
+                }
             }
             catch(PDOException $ex){
                 echo "<script>alert('An error has occured, please try again later.');</script>";

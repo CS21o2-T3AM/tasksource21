@@ -180,7 +180,11 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
                 try {
                     $result2 = pg_query($db, "UPDATE bid_task b set bid_amount='$bidamount'
                                                      where b.task_id = '$taskId'  AND b.bidder_email ='$bemail'");
-                echo"<script>alert('Bid successfully updated');</script>";
+                    if(empty($result3)){
+                        echo "<script>alert('An error has occured, please try again later.');</script>";
+                    }else{
+                        echo "<script>alert('Bid details successfully updated!');</script>";
+                    }
                     echo "<meta http-equiv='refresh' content='0'>";
                     header("Refresh:0");
                 }

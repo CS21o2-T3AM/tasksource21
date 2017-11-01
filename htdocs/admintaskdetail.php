@@ -197,18 +197,21 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
             //$biddingdeadline = $_POST['bidding_deadline'];
             //$lastupdated =  date("Y-m-d H:i:s O");
 
-            echo $taskId;
-            echo $tname;
-            echo $category;
-            echo $lastupdated;
-            echo $suggested_price;
-            echo $status;
+//            echo $taskId;
+//            echo $tname;
+//            echo $category;
+//            echo $lastupdated;
+//            echo $suggested_price;
+//            echo $status;
 
             try {
-                $result3 = pg_query($db, "UPDATE tasks SET (name, category, description, suggested_price, status) = ('$tname', '$category', '$description',
-                                                      '$suggested_price', '$status')
-                                                     WHERE id='$taskId'");
-                echo "<script>alert('Task successfully updated!');</script>";
+                $result3 = pg_query($db, "UPDATE tasks SET (name, category, description, suggested_price, status, datetime_updated) = ('$tname', '$category', '$description',
+                                                      '$suggested_price', '$status', now()::timestamp(0)) WHERE id='$taskId'");
+                if(empty($result3)){
+                    echo "<script>alert('An error has occured, please try again later.');</script>";
+                }else{
+                    echo "<script>alert('Task successfully updated!');</script>";
+                }
                 header("refresh:0");
                 echo "<meta http-equiv='refresh' content='0'>";
             }

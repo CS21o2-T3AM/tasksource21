@@ -123,7 +123,11 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
             try {
                 $result3 = pg_query($db, "UPDATE users SET (password_hash,name, phone) = ('$password','$name',  '$phone')
                                                      WHERE email='$row[email]'");
-                echo "<script>alert('User details successfully updated!');</script>";
+                if(empty($result3)){
+                    echo "<script>alert('An error has occured, please try again later.');</script>";
+                }else{
+                    echo "<script>alert('User details successfully updated!');</script>";
+                }
                 header("refresh:0");
             }
             catch(PDOException $ex){
