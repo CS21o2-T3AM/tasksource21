@@ -114,7 +114,7 @@ $name=$_SESSION[NAME];
     }
 
        //DISPLAY ALL TASKS
-    echo "<div class='container' name='task-wrapper' id='tasks-wrapper' class='main-content' '>";
+    echo "<div class='container' name='task-wrapper' id='tasks-wrapper' class='main-content' >";
     echo "<h2>Tasks</h2>";
     echo "<form name='searchTasks' action='' method='POST'>";
     echo   "<br/> <small>Search Tasks (Tasker's Email/ Task Name)</small><br/>";

@@ -123,11 +123,9 @@ $name=$_SESSION[NAME];
 
     $_POST['searchBids'] = true;
     if (isset($_POST['searchBids'])) {
-        echo $_POST['bidName'];
 
         $userInput = $_POST['bidName'];
         //Dynamically display bids
-        echo "<div style='height: 300px; width: auto; font-size: 16px; overflow: auto;border:2px solid darkgray; border-radius:5px;''>";
         //Display all by default
         $sql = 'select * from bid_task bt, tasks  t where bt.task_id = t.id';
 
@@ -139,14 +137,14 @@ $name=$_SESSION[NAME];
         }
         else if(!empty($userInput)){
             //Search by bidName
-            echo "Searching by Bid Name: ".$userInput;
+            echo "Searching by Task Name: ".$userInput;
             $sql = 'select * from bid_task bt, tasks t Where bt.task_id = t.id AND t.name ILIKE'."'%".$userInput."%'";
         }
         else{
             //If all else fails, display default
             $sql = 'select * from bid_task bt, tasks t WHERE bt.task_id = t.id';
         }
-
+        echo "<div style='height: 300px; width: auto; font-size: 16px; overflow: auto;border:2px solid darkgray; border-radius:5px;'>";
         echo "<table class='table table-bordered table-striped table-hover'>";
         echo "<tr>";
         echo "<th align='center' width='200'>Task ID</th>";

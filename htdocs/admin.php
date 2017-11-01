@@ -130,7 +130,6 @@ $name=$_SESSION[NAME];
 
     $_POST['searchUsers'] = true;
     if (isset($_POST['searchUsers'])) {
-        echo $_POST['userName'];
 
         $userInput = $_POST['userName'];
         //Dynamically display Tables
