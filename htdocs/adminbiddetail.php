@@ -3,14 +3,13 @@ session_start();
 $taskId= $_GET['taskid'];
 $ownerEmail= $_GET['owneremail'];
 $userEmail= $_GET['useremail'];
+$bidderEmail = $_GET['bidderemail'];
 
 $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=password");
 
-//Authentication check
-//if($userEmail==""){
-//    header("Location: index.php");
-//    exit;
-//}
+
+require_once '../utils/login.inc.php';
+admin_login_validate_or_redirect()
 ?>
     <!DOCTYPE html>
 
@@ -79,8 +78,8 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
     $result = pg_query($db, "
                               SELECT t.*, t.name AS tname, u1.*, u2.*, u1.name AS oname, u1.email AS oemail, u1.phone as ophone, u2.name AS bname, u2.email AS bemail, u2.phone as bphone, bt.*
                               FROM tasks t, bid_task bt, users u1, users u2
-                              WHERE  t.id = '$taskId'  AND bt.task_id = '$taskId'
-                              AND  u2.email = bt.bidder_email  AND u1.email = t.owner_email 
+                              WHERE  t.id = '$taskId'  AND bt.task_id = '$taskId' 
+                              AND  u2.email = '$bidderEmail' AND u1.email = t.owner_email 
                               ");
     $row    = pg_fetch_assoc($result);
 
@@ -152,25 +151,6 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
     	</div>
     	";
 
-
-//         if (isset($_POST['bid'])){
-//            try {
-//            $result2 = pg_query($db, "INSERT INTO bid_task (owneremail,taskid,bidderemail,bidamount,bidstatus,biddatetime)
-//                        VALUES('$ownerEmail','$taskId','$userEmail','$bidamt','$status','$biddateandtime')");
-//                if(!$result2){
-//                echo "Have Already bid on this task";
-//                } else {
-//                 $_SESSION['userName'] = $name;
-//                $_SESSION['userId'] = $email;
-//                header("Location: home.php");
-//                exit;
-//                }
-//            }
-//            catch(mysqli_sql_exception $ex){
-//            echo "DB Error";
-//            }
-//            }
-
             if (isset($_POST['updateBid'])){
                 date_default_timezone_set("Asia/Singapore");
                 $bidamount = $_POST['bidamount'];
@@ -186,7 +166,6 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
                         echo "<script>alert('Bid details successfully updated!');</script>";
                     }
                     echo "<meta http-equiv='refresh' content='0'>";
-                    header("Refresh:0");
                 }
                 catch(mysqli_sql_exception $ex){
                     echo "DB Error";
@@ -204,7 +183,6 @@ if (isset($_POST['deleteBid'])){
                                                      where b.task_id = '$taskId'  AND b.bidder_email ='$bemail'");
         echo"<script>alert('Bid successfully updated');</script>";
         echo "<meta http-equiv='refresh' content='0'>";
-        header("Refresh:0");
     }
     catch(mysqli_sql_exception $ex){
         echo "DB Error";
@@ -213,10 +191,7 @@ if (isset($_POST['deleteBid'])){
 
 
             if (isset($_POST['back'])){
-            $_SESSION[NAME] = $name;
-            $_SESSION[EMAIL] = $email;
-            header("Location: http://localhost/tasksource21/adminbids.php");
-            echo '<script>window.location = "http://localhost/tasksource21/adminbids.php";</script>';
+            echo '<script>window.location = "/tasksource21/adminbids.php";</script>';
             exit;
             }
             ?>

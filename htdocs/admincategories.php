@@ -1,20 +1,8 @@
 <?php
 // Use session to pass information such as email.
 //Note input validation not done yet
-session_start();
-$_SESSION[EMAIL] = "admin@gmail.com";
-$_SESSION[PASSWORD]='password';
-$_SESSION[NAME]='Jon Snow';
-
-$email=$_SESSION[EMAIL];
-$name=$_SESSION[NAME];
-
-//Authentication check
-//if($email==""){
-//    header("Location: index.php");
-//    exit;
-//}
-
+require_once '../utils/login.inc.php';
+admin_login_validate_or_redirect()
 ?>
 <!DOCTYPE html>
 

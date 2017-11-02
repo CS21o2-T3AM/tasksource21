@@ -1,20 +1,8 @@
 <?php
 // Use session to pass information such as email.
 //Note input validation not done yet
-session_start();
-$_SESSION[EMAIL] = "admin@gmail.com";
-$_SESSION[PASSWORD]='password';
-$_SESSION[NAME]='Jon Snow';
-
-$email=$_SESSION["EMAIL"];
-$name=$_SESSION[NAME];
-
-//Authentication check
-//if($email==""){
-//    header("Location: index.php");
-//    exit;
-//}
-
+require_once '../utils/login.inc.php';
+admin_login_validate_or_redirect();
 ?>
 <!DOCTYPE html>
 
@@ -127,21 +115,21 @@ $name=$_SESSION[NAME];
         $userInput =  $_POST['taskName'];
 
         //Display all Tasks by default
-        $sql = 'select * from tasks';
+        $sql = 'select * from tasks ORDER BY id DESC';
         if(strpos($userInput, '@')){
             //Search by email
             echo "Searching by Owner Email: ".$userInput;
             //Query using ILIKE
-            $sql = 'select * from tasks where owner_email ILIKE '."'%".$userInput."%'";
+            $sql = 'select * from tasks where owner_email ILIKE '."'%".$userInput."%' ORDER BY owner_email ASC";
         }
         else if(!empty($userInput)){
             //Search by bidName
             echo "Searching by Task Name: ".$userInput;
-            $sql = 'select * from tasks where name ILIKE '."'%".$userInput."%'";
+            $sql = 'select * from tasks where name ILIKE '."'%".$userInput."%' ORDER BY name ASC";
         }
         else{
             //If all else fails, display default
-            $sql = 'select * from tasks';
+            $sql = 'select * from tasks ORDER BY id DESC';
         }
         echo "<br/>";
         //Dynamic Task display

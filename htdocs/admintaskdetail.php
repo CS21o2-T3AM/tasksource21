@@ -7,11 +7,9 @@ $userEmail= $_GET['useremail'];
 
 $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=password");
 
-//Authentication check
-//if($userEmail==""){
-//    header("Location: index.php");
-//    exit;
-//}
+
+require_once '../utils/login.inc.php';
+admin_login_validate_or_redirect()
 ?>
 <!DOCTYPE html>
 
@@ -208,7 +206,6 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
                 }else{
                     echo "<script>alert('Task successfully updated!');</script>";
                 }
-                header("refresh:0");
                 echo "<meta http-equiv='refresh' content='0'>";
             }
             catch(PDOException $ex){
@@ -233,15 +230,14 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
             catch(PDOException $ex){
                 echo "<script>alert('An error has occured, please try again later.');</script>";
             }
+            echo "<meta http-equiv='refresh' content='0'>";
             parent.window.location.reload();
         }
 
         //Back Button Clicked
         if (isset($_POST['back'])){
             echo "going back";
-            $_SESSION[NAME] = $name;
-            $_SESSION[EMAIL] = $email;
-            echo "<script>window.location.assign('admintasks.php')</script>";
+            echo '<script>window.location = "/tasksource21/admintasks.php";</script>';
             exit;
         }
 

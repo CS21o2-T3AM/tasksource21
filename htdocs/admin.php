@@ -1,19 +1,8 @@
 <?php
 // Use session to pass information such as email.
 //Note input validation not done yet
-session_start();
-$_SESSION[EMAIL] = "admin@gmail.com";
-$_SESSION[PASSWORD]='password';
-$_SESSION[NAME]='Jon Snow';
-
-$email=$_SESSION[EMAIL];
-$name=$_SESSION[NAME];
-
-//Authentication check
-//if($email==""){
-//    header("Location: index.php");
-//    exit;
-//}
+require_once '../utils/login.inc.php';
+admin_login_validate_or_redirect();
 ?>
 <!DOCTYPE html>
 
@@ -134,22 +123,22 @@ $name=$_SESSION[NAME];
         //Dynamically display Tables
 
         //Display all Users by default
-        $sql = 'select * from users';
+        $sql = 'select * from users ORDER BY email ASC';
 
         if(strpos($userInput, '@')){
             //Search by email
             echo "Searching by Email: ".$userInput;
             //Query using ILIKE
-            $sql = 'select * from users where email ILIKE '."'%".$userInput."%'";
+            $sql = 'select * from users where email ILIKE '."'%".$userInput."%' ORDER BY email ASC";
         }
         else if(!empty($userInput)){
             //Search by bidName
             echo "Searching by User's Name: ".$userInput;
-            $sql = 'select * from users where name ILIKE '."'%".$userInput."%'";
+            $sql = 'select * from users where name ILIKE '."'%".$userInput."%' ORDERY BY email ASC";
         }
         else{
             //If all else fails, display default
-            $sql = 'select * from users';
+            $sql = 'select * from users ORDER BY email ASC ';
         }
 
         echo "<div style='height: 300px; width: auto ; font-size: 16px; overflow: auto;border:2px solid darkgray; border-radius:5px;'>";
