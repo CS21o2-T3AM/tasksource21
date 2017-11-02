@@ -236,7 +236,8 @@ admin_login_validate_or_redirect()
 
         //Back Button Clicked
         if (isset($_POST['back'])){
-            echo "going back";
+            $_SESSION['userName'] = $name;
+            $_SESSION['userId'] = $email;
             echo '<script>window.location = "/tasksource21/admintasks.php";</script>';
             exit;
         }
