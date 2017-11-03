@@ -18,12 +18,36 @@ function run_update_function($dbh) {
     $result = pg_execute($dbh, $statement, $params);
 }
 
+function get_all_open_tasks($dbh) {
+    $statement = 'getting open tasks';
+    $query = 'SELECT t.id, t.name, t.bidding_deadline,
+              t.start_datetime, t.suggested_price, t.category
+              FROM tasks t
+              WHERE t.status = \'open\'
+              ORDER BY t.bidding_deadline ASC';
+
+    $result = pg_prepare($dbh, $statement, $query);
+    $params = array();
+    $result = pg_execute($dbh, $statement, $params);
+
+    $tasks = array();
+    while($row = pg_fetch_assoc($result)) {
+        $bid_time = new DateTime($row[DB_START_DT]);
+        $bid_time = $bid_time->format('H:i d M Y');
+        $row[DB_START_DT] = $bid_time;
+        $bid_time = new DateTime($row[DB_BIDDING_DEADLINE]);
+        $bid_time = $bid_time->format('H:i d M Y');
+        $row[DB_BIDDING_DEADLINE] = $bid_time;
+        $tasks[] = $row;
+    }
+    return $tasks;
+}
+
 function get_task_by_id($dbh, $task_id) {
     $statement = 'getting task with given $task_id';
     $query = 'SELECT t.name, t.description, t.postal_code, t.address, t.status, t.bidding_deadline,
               t.start_datetime, t.end_datetime, t.suggested_price, t.category, t.owner_email
               FROM tasks t
-              JOIN users u ON t.owner_email = u.email
               WHERE t.id = $1';
 
     $result = pg_prepare($dbh, $statement, $query);
