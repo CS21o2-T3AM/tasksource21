@@ -5,11 +5,8 @@ $userEmail= $_GET['useremail'];
 
 $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=password");
 
-//Authentication check
-//if($userEmail==""){
-//    header("Location: index.php");
-//    exit;
-//}
+require_once '../utils/login.inc.php';
+admin_login_validate_or_redirect()
 ?>
 <!DOCTYPE html>
 
@@ -131,7 +128,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
                 }else{
                     echo "<script>alert('User details successfully updated!');</script>";
                 }
-                header("refresh:0");
+                echo "<meta http-equiv='refresh' content='0'>";
             }
             catch(PDOException $ex){
                 echo "<script>alert('An error has occured, please try again later.');</script>";
@@ -150,7 +147,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
                 $result3 = pg_query($db, "DELETE FROM users
                                                      WHERE email='$row[email]'");
                 echo "<script>alert('User has been deleted.');</script>";
-                header("refresh:0");
+                echo "<meta http-equiv='refresh' content='0'>";
             }
             catch(PDOException $ex){
                 echo "<script>alert('An error has occured, please try again later.');</script>";
@@ -160,9 +157,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
 
         //Back Button Clicked
         if (isset($_POST['back'])){
-            $_SESSION['userName'] = $name;
-            $_SESSION['userId'] = $email;
-            header("Location: http://localhost/tasksource21/admin.php");
+            echo '<script>window.location = "/tasksource21/admin.php";</script>';
             exit;
         }
 

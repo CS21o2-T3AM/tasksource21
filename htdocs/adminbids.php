@@ -1,19 +1,8 @@
 <?php
 // Use session to pass information such as email.
 //Note input validation not done yet
-session_start();
-$_SESSION[EMAIL] = "admin@gmail.com";
-$_SESSION[PASSWORD]='password';
-$_SESSION[NAME]='Jon Snow';
-
-$email=$_SESSION["EMAIL"];
-$name=$_SESSION[NAME];
-
-//Authentication check
-//if($email==""){
-//    header("Location: index.php");
-//    exit;
-//}
+require_once '../utils/login.inc.php';
+admin_login_validate_or_redirect()
 ?>
 <!DOCTYPE html>
 
@@ -127,22 +116,22 @@ $name=$_SESSION[NAME];
         $userInput = $_POST['bidName'];
         //Dynamically display bids
         //Display all by default
-        $sql = 'select * from bid_task bt, tasks  t where bt.task_id = t.id';
+        $sql = 'select * from bid_task bt, tasks  t where bt.task_id = t.id ORDER BY bt.task_id ASC';
 
         if(strpos($userInput, '@')){
             //Search by email
             echo "Searching by Email: ".$userInput;
             //Query using ILIKE
-            $sql = 'select * from bid_task bt, tasks t where bt.task_id = t.id '."AND bt.bidder_email ILIKE'%".$userInput."%'";
+            $sql = 'select * from bid_task bt, tasks t where bt.task_id = t.id '."AND bt.bidder_email ILIKE'%".$userInput."%' ORDER BY bt.task_id ASC";
         }
         else if(!empty($userInput)){
             //Search by bidName
             echo "Searching by Task Name: ".$userInput;
-            $sql = 'select * from bid_task bt, tasks t Where bt.task_id = t.id AND t.name ILIKE'."'%".$userInput."%'";
+            $sql = 'select * from bid_task bt, tasks t Where bt.task_id = t.id AND t.name ILIKE'."'%".$userInput."%' ORDER BY bt.task_id ASC";
         }
         else{
             //If all else fails, display default
-            $sql = 'select * from bid_task bt, tasks t WHERE bt.task_id = t.id';
+            $sql = 'select * from bid_task bt, tasks t WHERE bt.task_id = t.id ORDER BY bt.task_id ASC';
         }
         echo "<div style='height: 300px; width: auto; font-size: 16px; overflow: auto;border:2px solid darkgray; border-radius:5px;'>";
         echo "<table class='table table-bordered table-striped table-hover'>";
@@ -163,7 +152,7 @@ $name=$_SESSION[NAME];
         {
             echo "<tr>";
             echo "<td align='center' width='200'>" . $row['task_id'] . "</td>";
-            echo "<td align='center' width='500'><a href=\"adminbiddetail.php?taskid={$row['id']}&owneremail={$row['owner_email']}&useremail={$email}\">".$row['name']."</a></td>";
+            echo "<td align='center' width='500'><a href=\"adminbiddetail.php?taskid={$row['id']}&owneremail={$row['owner_email']}&bidderemail={$row['bidder_email']}&useremail={$email}\">".$row['name']."</a></td>";
             echo "<td align='center' width='200'>" . $row['bidder_email'] . "</td>";
             echo "<td align='center' width='200'>" . $row['category'] . "</td>";
             echo "<td align='center' width='200'>" . $row['start_datetime'] . "</td>";
