@@ -2,7 +2,7 @@
 
 function echo_tasks_table_all($tasks) {
     if(count($tasks) === 0) {
-        echo '<span class="text-success">There is currently no tasks open for bidding</span>';
+        echo '<span class="text-danger">There are currently no tasks open for bidding that match your criteria</span>';
         return;
     }
 
@@ -36,14 +36,15 @@ function echo_table_completed_tasks($tasks) {
     $table_data ='';
     $template = '<tr><td><a href="view_task.php?task_id=%d">%s</a></td><td>%s</td><td>%s</td></tr>';
     foreach($tasks as $task) {
-        $remark = '';
+        $is_owner = $task[DB_OWNER] === $_SESSION[EMAIL];
+        $remark = $is_owner !== true ? 'You were the doer of this task' : 'You were the owner of this task';
         $task_data = sprintf($template, $task[DB_ID], $task[DB_NAME], $task[DB_DATE], $remark);
         $table_data .= $task_data;
     }
     $table = <<< EOT
 <table class="table">
     <thead>
-        <tr><th>Task Name</th><th>Completed Date</th><th>Remark</th></tr>
+        <tr><th>Task Name</th><th>Completed date</th><th>Remark</th></tr>
     </thead>
     <tbody>
         $table_data
@@ -70,7 +71,7 @@ function echo_table_assigned_tasks($tasks) {
     $table = <<< EOT
 <table class="table">
     <thead>
-        <tr><th>Task Name</th><th>Task start Date</th><th></th></tr>
+        <tr><th>Task Name</th><th>Task start date</th><th></th></tr>
     </thead>
     <tbody>
         $table_data
@@ -97,7 +98,7 @@ function echo_table_bidding_tasks($tasks) {
     $table = <<< EOT
 <table class="table">
     <thead>
-        <tr><th>Task Name</th><th>Bidding Deadline</th><th></th></tr>
+        <tr><th>Task Name</th><th>Bidding deadline</th><th></th></tr>
     </thead>
     <tbody>
         $table_data

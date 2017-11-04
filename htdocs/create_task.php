@@ -10,17 +10,22 @@ login_validate_or_redirect();
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
 
-    <!-- jQuery first, then Tether, then Bootstrap JS. -->
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <style rel="stylesheet">
+        .rcorners {
+            border-radius: 5px;
+            border: 1px solid #c9c9c9;
+            padding: 20px;
+            background-color: white;
+        }
+    </style>
+
     <title>Create Task</title>
 </head>
-
-<body>
 
 <?php
 require_once '../utils/constants.inc.php';
@@ -117,7 +122,6 @@ if (isset($_POST['submit'])) {
         $bidding_deadline_err = true;
     } else {
         $bidding_deadline = new DateTime(htmlspecialchars($_POST[BIDDING_DEADLINE]));
-//        echo $bidding_deadline->format('Y-m-d H:i');
         if ($current_time > $bidding_deadline) {
             $isAllDataValid = false;
             $bidding_deadline_err = true;
@@ -156,10 +160,10 @@ if (isset($_POST['submit'])) {
 
     if ($isAllDataValid === true) {
         $php_to_postgres_format = 'Y-m-d H:i:s';
-        $bidding_deadline = $bidding_deadline->format($php_to_postgres_format);
-        $start_dt = $start_dt->format($php_to_postgres_format);
-        $end_dt = $end_dt->format($php_to_postgres_format);
-        $params = array($task_name, $user_email, $task_desc, $category, $postal_code, $address, $start_dt, $end_dt, $suggested_price, $bidding_deadline);
+        $bidding_deadline_data = $bidding_deadline->format($php_to_postgres_format);
+        $start_dt_data = $start_dt->format($php_to_postgres_format);
+        $end_dt_data = $end_dt->format($php_to_postgres_format);
+        $params = array($task_name, $user_email, $task_desc, $category, $postal_code, $address, $start_dt_data, $end_dt_data, $suggested_price, $bidding_deadline_data);
         $result = insert_new_task($dbh, $params);
         if ($result !== false) {
             header('Location: home.php'); // maybe some message to display?
@@ -173,15 +177,17 @@ if (isset($_POST['submit'])) {
 }
 ?>
 
+<body style="background-color: #f9f9f9">
+
 <?php
 include_once '../utils/html_parts/navbar.php';
 ?>
 
 <div class="container mt-3">
 
-    <div class="row align-items-center">
+    <div class="row align-items-center ">
 
-        <div class="col-9 offset-1">
+        <div class="col-9 offset-1 rcorners">
             <div class="text-center mt-4"><h2>Create a Task</h2></div>
             <hr>
 
@@ -222,7 +228,7 @@ include_once '../utils/html_parts/navbar.php';
                         <fieldset about="Location">
                             <legend class="text-center">Location</legend>
                             <div class="form-group <?php echo isset($postal_code_err) ? 'has-danger' : '' ?>">
-                                <label class="form-control-label" for="postal_code">Postal Code: </label>
+                                <label class="form-control-label" for="postal_code">Postal Code (6-digit): </label>
                                 <input class="form-control <?php echo isset($postal_code_err) ? 'form-control-danger' : '' ?>"
                                        type="text" id="postal_code" name="postal_code"
                                        value="<?php echo $postal_code; ?>" placeholder="postal code">
@@ -254,7 +260,9 @@ include_once '../utils/html_parts/navbar.php';
                                        id="end_dt" type="datetime-local" name="end_dt"
                                        value="<?php echo isset($end_dt)? $end_dt->format($php_to_html_date_format): 'a'; ?>">
                             </div>
-
+                            <div class="text-danger mb-3">
+                                <?php echo isset($general_form_err) ? $general_form_err : '' ?>
+                            </div>
 
                         </fieldset> <!-- date and time -->
                     </div>
@@ -285,9 +293,7 @@ include_once '../utils/html_parts/navbar.php';
                         </fieldset> <!--price-->
                     </div> <!-- col -->
                     <div class="col-6">
-                        <div class="text-danger m-1">
-                            <?php echo isset($general_form_err) ? $general_form_err : '' ?>
-                        </div>
+                        <div class="text-warning text-justify mb-4">Please note that you will not be able to edit the content once the task is created</div>
                         <div class="form-group text-center">
                             <input class="btn btn-primary" type="submit" name="submit" value="Submit"/>
                         </div>
@@ -305,11 +311,15 @@ include_once '../utils/html_parts/navbar.php';
 
 </div>
 
+<!--<!--    make sure this order is correct, and placed near the end of body tag-->-->
+<!--<script type="text/javascript" src="../js/jquery-3.1.1.slim.min.js"></script>-->
+<!--<script type="text/javascript" src="../js/tether.min.js"></script>-->
+<!--<script type="text/javascript" src="../js/bootstrap.min.js"></script>-->
 
-<!--    make sure this order is correct, and placed near the end of body tag-->
-<script type="text/javascript" src="../js/jquery-3.1.1.slim.min.js"></script>
-<script type="text/javascript" src="../js/tether.min.js"></script>
-<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+<!-- jQuery first, then Tether, then Bootstrap JS. -->
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 
 </body>
 

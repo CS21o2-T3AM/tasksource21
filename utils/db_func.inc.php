@@ -5,26 +5,56 @@ require_once 'constants.inc.php';
 function run_update_function($dbh) {
     /* bidding_deadline reached (open) -> bidding_closed | closed */
     $statement = 'run functions to update status';
-    $function1 = 'SELECT updatetaskstatus()';
+    $function1 = 'SELECT update_task_status()';
     $result = pg_prepare($dbh, $statement, $function1);
     $params = array();
     $result = pg_execute($dbh, $statement, $params);
 
     /* task start_datetime reached (assigned | bidding_closed) -> closed */
     $statement = 'run functions to close status';
-    $function2 = 'SELECT taskclose()';
+    $function2 = 'SELECT close_past_task()';
     $result = pg_prepare($dbh, $statement, $function2);
     $params = array();
     $result = pg_execute($dbh, $statement, $params);
 }
 
-function get_all_open_tasks($dbh) {
-    $statement = 'getting open tasks';
+function get_all_open_tasks($dbh, $task_keywords, $address_keywords, $start_dt, $max_price, $min_price, $category) {
+    $statement = 'getting open tasks satisfying filter';
     $query = 'SELECT t.id, t.name, t.bidding_deadline,
               t.start_datetime, t.suggested_price, t.category
               FROM tasks t
-              WHERE t.status = \'open\'
-              ORDER BY t.bidding_deadline ASC';
+              WHERE t.status = \'open\' ';
+
+    if (!empty($task_keywords)) {
+        $query .= "AND (t.name LIKE '%$task_keywords%' OR t.description LIKE '%$task_keywords') ";
+    }
+
+    if (!empty($address_keywords)) {
+        $query .= "AND t.address LIKE '%$address_keywords%' ";
+    }
+
+    if (!empty($category)) {
+        $query .= "AND t.category = '$category' ";
+    }
+
+    if (!empty($start_dt)) {
+        $php_to_postgres_format = 'Y-m-d H:i:s';
+        $start_dt_convert = new DateTime($start_dt);
+        $start_dt = $start_dt_convert->format($php_to_postgres_format);
+        $query .= "AND t.start_datetime > '$start_dt' ";
+    }
+
+    if (!empty($min_price)) {
+        $min_price = floatval($min_price);
+        $query .= "AND t.suggested_price > cast($min_price AS money) ";
+    }
+
+    if (!empty($max_price)) {
+        $max_price = floatval($max_price);
+        $query .= "AND t.suggested_price < cast($max_price AS money) ";
+    }
+
+    $query .= 'ORDER BY t.bidding_deadline ASC';
 
     $result = pg_prepare($dbh, $statement, $query);
     $params = array();
@@ -113,6 +143,17 @@ function update_task($dbh, $params) {
               WHERE id = $11';
     $result = pg_prepare($dbh, $statement, $query);
     $result = pg_execute($dbh, $statement, $params);
+    return $result;
+}
+
+function delete_task($dbh, $task_id) {
+    $statement = 'close task';
+    $query = 'UPDATE tasks
+              SET status = \'closed\'
+              WHERE id = $1';
+    $result = pg_prepare($dbh, $statement, $query);
+    $param = array($task_id);
+    $result = pg_execute($dbh, $statement, $param);
     return $result;
 }
 
@@ -259,7 +300,7 @@ function get_tasks_assigned($dbh, $user_id) {
 
 function get_tasks_complete($dbh, $user_id) {
     $statement = 'get previous tasks completed/submitted by the user';
-    $query = 'SELECT t.id, t.name, t.start_datetime AS date
+    $query = 'SELECT t.id, t.name, t.start_datetime AS date, t.owner_email
               FROM tasks t
               WHERE 
               (
@@ -295,7 +336,9 @@ function get_tasks_complete($dbh, $user_id) {
     return $tasks;
 }
 
-function get_user_rating($dbh, $user_id, $role) {
+// ================================== rating related ======================================= //
+
+function get_user_avg_rating($dbh, $user_id, $role) {
     if ($role !== 'owner' && $role !== 'doer')
         return false;
 
@@ -313,6 +356,33 @@ function get_user_rating($dbh, $user_id, $role) {
 
     $row = pg_fetch_assoc($result);
     return sprintf('%.2f/5 (%d)', $row[DB_AVG], $row[DB_COUNT]);
+}
+
+function get_user_rating_for_task($dbh, $task_id, $user_email) {
+    $statement = 'get rating for a particular task';
+    $query = 'SELECT r.rating
+              FROM task_ratings r
+              WHERE r.user_email = $1
+              AND r.task_id = $2';
+    $result = pg_prepare($dbh, $statement, $query);
+    $params = array($user_email, $task_id);
+    $result = pg_execute($dbh, $statement, $params);
+
+    if (pg_num_rows($result) === 0)
+        return 0;
+
+    $row = pg_fetch_assoc($result);
+    return intval($row['rating']);
+}
+
+function insert_user_rating_for_task($dbh, $task_id, $user_email, $role, $rating) {
+    $statement = 'insert user rating for a task';
+    $query = 'INSERT INTO task_ratings
+              (task_id, user_email, rating, role) VALUES ($1, $2, $3, $4)';
+    $result = pg_prepare($dbh, $statement, $query);
+    $params = array($task_id, $user_email, $rating, $role);
+    $result = pg_execute($dbh, $statement, $params);
+    return $result;
 }
 
 // =================================== bidding related ====================================== //

@@ -52,3 +52,15 @@ define('STATUS_CLOSED', 'closed', false);
 define('STATUS_OPEN', 'open', false);
 define('STATUS_BIDDING_CLOSED', 'bidding_closed', false);
 define('STATUS_ASSIGNED', 'assigned', false);
+
+// search fields
+define('TASK_KEYWORDS', 'task_keywords', false);
+define('ADDRESS_KEYWORDS', 'address_keywords', false);
+define('PRICE_MAX', 'max_price', false);
+define('PRICE_MIN', 'min_price', false);
+define('CHECK_ADDRESS_KEYWORDS', 'check_address_keywords', false);
+define('CHECK_TASK_KEYWORDS', 'check_task_keywords', false);
+define('CHECK_PRICE_MIN', 'check_min_price', false);
+define('CHECK_PRICE_MAX', 'check_max_price', false);
+define('CHECK_START_DATE', 'check_start_datetime', false);
+define('CHECK_CATEGORY', 'check_category', false);

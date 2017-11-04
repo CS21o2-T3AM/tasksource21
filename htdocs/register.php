@@ -11,13 +11,16 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 
-    <!-- jQuery first, then Tether, then Bootstrap JS. -->
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-</head>
+    <style rel="stylesheet">
+        .rcorners {
+            border-radius: 5px;
+            border: 1px solid #c9c9c9;
+            padding: 40px;
+            background-color: white;
+        }
+    </style>
 
-<body>
+</head>
 
 <?php
 // initialize form inputs and error messages
@@ -104,11 +107,12 @@ if (isset($_POST['submit'])) {
             $email_err = "A user with the same email already exists";
         }
     } else {
-        $general_form_err = 'One or more mandatory fields are not set and/or contains invalid values';
+        $general_form_err = 'One or more fields contain invalid values';
     }
 }
 
 ?>
+<body style="background-color: #f9f9f9">
 <?php
     include_once '../utils/html_parts/navbar.php';
 ?>
@@ -116,7 +120,7 @@ if (isset($_POST['submit'])) {
 
         <div class="row align-items-center">
 
-            <div class="col-5 offset-1 mt-2">
+            <div class="col-5 offset-1 mt-3 rcorners">
 
                 <form action="" method="POST">
 
@@ -145,7 +149,7 @@ if (isset($_POST['submit'])) {
                     </div>
 
                     <div class="form-group row <?php echo isset($contact_err)? 'has-danger' : ''?>">
-                    <label class="form-control-label" for="contact">Contact number: </label>
+                    <label class="form-control-label" for="contact">Contact number (8-digit)    : </label>
                     <input class="form-control <?php echo isset($contact_err)? 'form-control-danger' : ''?>" type="tel" id="contact" name="contact" value="<?php echo $contact;?>" placeholder="phone number">
                     <span class="error text-danger"><?php echo !empty($contact_err)? $contact_err: '';?></span>
                     </div>
@@ -156,10 +160,9 @@ if (isset($_POST['submit'])) {
                     <?php echo !empty($general_form_err) ? $general_form_err : ''?>
                     </div>
 
-                    <div class="form-group row">
+                    <div class="form-group row mt-2">
                     <input class="btn btn-primary" type="submit" name="submit" value="Submit"/>
                     </div>
-
                 </form>
 
             </div>
@@ -172,10 +175,15 @@ if (isset($_POST['submit'])) {
 
     </div>
 
-    <!--    make sure this order is correct, and placed near the end of body tag-->
-    <script type="text/javascript" src="../js/jquery-3.1.1.slim.min.js"></script>
-    <script type="text/javascript" src="../js/tether.min.js"></script>
-    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+<!--    <!--    make sure this order is correct, and placed near the end of body tag-->-->
+<!--    <script type="text/javascript" src="../js/jquery-3.1.1.slim.min.js"></script>-->
+<!--    <script type="text/javascript" src="../js/tether.min.js"></script>-->
+<!--    <script type="text/javascript" src="../js/bootstrap.min.js"></script>-->
+
+    <!-- jQuery first, then Tether, then Bootstrap JS. -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 
 </body>
 

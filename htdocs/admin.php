@@ -63,7 +63,7 @@ admin_login_validate_or_redirect();
     </div>
 </div>
 
-<div class="container" name="page-content-wrapper">
+<div class="container" id="page-content-wrapper">
     <!--welcome message-->
     <h3 align="right">Welcome back, <?php echo $email; ?>!</h3>
 
@@ -132,7 +132,7 @@ admin_login_validate_or_redirect();
         else if(!empty($userInput)){
             //Search by bidName
             echo "Searching by User's Name: ".$userInput;
-            $sql = 'select * from users where name ILIKE '."'%".$userInput."%' ORDERY BY email ASC";
+            $sql = 'select * from users where name ILIKE '."'%".$userInput."%' ORDER BY email ASC";
         }
         else{
             //If all else fails, display default

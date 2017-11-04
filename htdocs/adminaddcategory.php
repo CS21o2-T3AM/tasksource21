@@ -6,11 +6,6 @@ $userEmail= $_GET['useremail'];
 
 $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=password");
 
-//Authentication check
-//if($userEmail==""){
-//    header("Location: index.php");
-//    exit;
-//}
 ?>
 <!DOCTYPE html>
 

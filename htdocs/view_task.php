@@ -3,7 +3,7 @@ require_once '../utils/login.inc.php';
 login_validate_or_redirect();
 require_once '../utils/db_con.inc.php';
 require_once '../utils/db_func.inc.php';
-//    TODO: run_update_function($dbh);
+run_update_function($dbh);
 $task_array = get_task_array_or_redirect($dbh);
 ?>
 
@@ -21,11 +21,23 @@ $task_array = get_task_array_or_redirect($dbh);
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <style rel="stylesheet">
+        .rcorners {
+            border-radius: 5px;
+            border: 1px solid #c9c9c9;
+            padding: 20px;
+            background-color: white;
+        }
 
-<!-- jQuery first, then Tether, then Bootstrap JS. -->
-<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+        .table_borderless {
+            border-bottom:0 !important;
+        }
+        .table_borderless th, .table_borderless td {
+            border: 1px !important;
+        }
+
+    </style>
 
 </head>
 
@@ -54,9 +66,9 @@ $task_array = get_task_array_or_redirect($dbh);
     require_once '../utils/constants.inc.php';
     $task_id = $_GET[TASK_ID];
     $user_email = $_SESSION[EMAIL];
-    $owner_rating = get_user_rating($dbh, $task_owner, 'owner');
+    $owner_rating = get_user_avg_rating($dbh, $task_owner, 'owner');
 
-    $bid_err = '';
+    $bid_err = $rate_err = '';
     if (isset($_POST['submit'])) {
         if (!isset($_POST[BID])) {
             $bid_err = 'Please set the bid amount';
@@ -83,8 +95,8 @@ $task_array = get_task_array_or_redirect($dbh);
     // show different UI depending on the state of the task
     if ($task_status === STATUS_OPEN) {
         if ($task_owner === $user_email) {
-            $edit_button = "<div class=\"col-1 mr-5 \">
-                            <a class=\"btn btn-primary\" href=\"edit_task.php?task_id=$task_id\">Edit</a>
+            $delete_button = "<div class=\"ml-4\">
+                            <a class=\"btn btn-danger\" href=\"delete_task.php?task_id=$task_id\">Delete</a>
                             </div>";
         } else {
             $user_bid = find_user_bid_for_task($dbh, $user_email, $task_id);
@@ -104,9 +116,41 @@ $task_array = get_task_array_or_redirect($dbh);
         $assigned_user_email = get_assigned_user($dbh, $task_id);
         if ($assigned_user_email === false) {
             unset($assigned_user_email); // unset so that it won't be shown
-            $closed_message = "<span class=\"text-danger\">The bidding for this task is closed</span>";
+            $closed_message = "<div class=\"text-danger mb-2 mt-2\">The bidding for this task is closed.<br></div>";
         }
     }
+
+    // ================================ rating ================================= //
+    $was_assigned = isset($assigned_user_email) ? $assigned_user_email : false;
+    if ($task_status === 'closed' && $was_assigned !== false) {
+        $assigned_user_email = $was_assigned;
+        if ($user_email === $assigned_user_email || $user_email === $task_owner) {
+            $user_to_rate = ($user_email === $assigned_user_email) ? $task_owner: $assigned_user_email;
+            $rating = get_user_rating_for_task($dbh, $task_id, $user_to_rate);
+            if ($rating === 0) { // not rated the opposite party
+                $rating_target = $user_to_rate;
+            } else {
+                $rating_message = "<div class=\"text-success mb-2 mt-2\">You rated $user_to_rate as $rating for this task.<br></div>";
+            }
+        }
+    }
+
+    if (isset($_POST['rate'])) {
+        $post_rating = intval($_POST['rating']);
+        if ($post_rating >= 1 && $post_rating <= 5) {
+            $role = ($task_owner === $user_email) ? 'doer': 'tasker'; // role is the opposite: if owner, rate doer and vice versa
+            $result = insert_user_rating_for_task($dbh, $task_id, $_POST['rating_target'], $role, $post_rating);
+            if ($result === false) {
+                $rate_err = 'insertion into database has failed';
+            } else {
+                header('Location: view_task.php?task_id='.$task_id); // refresh
+                exit;
+            }
+        } else {
+            $rate_err = 'rating must be between 1 and 5';
+        }
+    }
+
 ?>
 
 <body>
@@ -117,54 +161,51 @@ $task_array = get_task_array_or_redirect($dbh);
 <div class="container">
     <div class="row m-2 mt-3" id="wrapper">
 
-        <div class="col-6" id="task_details">
+        <div class="col-6 rcorners" id="task_details">
             <div class="row">
-                <div class="col">
-                    <h2><?php echo $task_name?></h2>
+                <div class="col-9">
+                    <h2><i><?php echo $task_name?></i></h2>
                     <hr>
                 </div>
 
+                <div class="col-1">
                 <?php
-                    if(isset($edit_button))
-                        echo $edit_button;
+                    if(isset($delete_button))
+                        echo $delete_button;
                 ?>
-                <hr>
+                </div>
                 <div class="col-11 mt-3">
-                    <h4>Posted by:</h4> <h5><?php echo $task_owner.": rating $owner_rating"?></h5>
+                    <table class="table table_borderless">
+                        <tr><th>Posted by: </th><td><?php echo $task_owner?></td></tr>
+                        <tr><th>Owner rating</th><td><?php echo $owner_rating?></td></tr>
+                        <tr><th>Category </th><td><?php echo $task_category?></td></tr>
+                        <tr><th>Price </th><td><?php echo $task_price?></td></tr>
+                    </table>
                 </div>
 
-                <div class="col-11 mt-3">
-                    <b>Category:</b> <?php echo $task_category?>
-                </div>
-
-                <div class="col-11 mt-2">
-                    <b>Price: </b> <?php echo $task_price?>
+                <div class="col-9 mb-2">
+                    <h4 class="mt-1 mb-3"><i>Location</i></h4>
                     <hr>
-                </div>
 
-
-                <div class="col-11 mb-2">
-                    <h4 class="mt-1 mb-3">Location</h4>
-                    <p><b>Postal Code:</b>
-                        <?php echo $task_postal_code?>
-                    </p><!--postal code-->
-
-                    <p>
-                        <b>Address: </b>
-                        <?php echo $task_address?>
-                    </p> <!--addess-->
-                    <hr>
+                    <table class="table table_borderless">
+                        <tr><th>Postal Code: </th><td><?php echo $task_postal_code?></td></tr>
+                        <tr><th>Address:</th><td><?php echo $task_address?></td></tr>
+                    </table>
                 </div><!--location -->
 
-                <div class="col-11">
-                    <h4>Date and Time</h4>
-                    <?php echo $start_dt?>
-                    <?php echo $end_dt?>
+                <div class="col-9 mb-2">
+                    <h4><i>Date and Time</i></h4>
                     <hr>
+
+                    <table class="table table_borderless">
+                        <tr><th>Start date</th><td><?php echo $start_dt?></td></tr>
+                        <tr><th>End date</th><td><?php echo $end_dt?></td></tr>
+                    </table>
                 </div>
 
-                <div class="col-11 ">
-                    <h4>Description</h4>
+                <div class="col-11 mb-2">
+                    <h4><i>Description</i></h4>
+                    <hr>
                     <p>
                         <?php echo $task_desc ?>
                     </p>
@@ -195,7 +236,7 @@ $task_array = get_task_array_or_redirect($dbh);
 
                     if (isset($user_bid)) {
                         echo_bid_form($bid_err, $user_bid);
-                    } else if (isset($edit_button)){
+                    } else if (isset($delete_button)) {
                         echo '<div class="text-success col-11 mt-3"><h5>You are the owner of this task!</h5></div>';
                     }
 
@@ -203,12 +244,22 @@ $task_array = get_task_array_or_redirect($dbh);
                         echo $closed_message;
                     }
 
+
                     if (isset($assigned_user_email)) {
                         echo_assigned_user($assigned_user_email, $task_owner);
                     }
 
+                    if (isset($rating_message)) {
+                        echo $rating_message;
+                    }
+
                     if (isset($choose_winner_button)) {
                         echo $choose_winner_button;
+                    }
+
+                    if (isset($rating_target)) {
+                        require_once'../utils/html_parts/rate_user_form.php';
+                        echo_user_rate_form($rating_target, $rate_err);
                     }
 
                 ?>
@@ -221,10 +272,15 @@ $task_array = get_task_array_or_redirect($dbh);
 
 </div> <!-- container -->
 
-        <!--    make sure this order is correct, and placed near the end of body tag-->
-    <script type="text/javascript" src="../js/jquery-3.1.1.slim.min.js"></script>
-    <script type="text/javascript" src="../js/tether.min.js"></script>
-    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+<!--    make sure this order is correct, and placed near the end of body tag-->
+<script type="text/javascript" src="../js/jquery-3.1.1.slim.min.js"></script>
+<script type="text/javascript" src="../js/tether.min.js"></script>
+<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+
+<!-- jQuery first, then Tether, then Bootstrap JS. -->
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 
 </body>
 </html>
