@@ -111,6 +111,9 @@ admin_login_validate_or_redirect();
     echo "<br/>";
     echo "<br/>";
 
+    if(isset($_POST['advancedSearch'])){
+        echo '<script>window.location = "/tasksource21/admintasksearch.php";</script>';
+    }
 
     if (isset($_POST['searchTasks'])) {
         $userInput =  $_POST['taskName'];
@@ -133,9 +136,6 @@ admin_login_validate_or_redirect();
             $sql = 'select * from tasks ORDER BY status, id DESC';
         }
 
-        if(isset($_POST['advancedSearch'])){
-            echo '<script>window.location = "/tasksource21/admintasksearch.php";</script>';
-        }
         echo "<br/>";
         //Dynamic Task display
         echo "<div style='height: 300px; width: auto; font-size: 16px; overflow: auto;border:2px solid darkgray; border-radius:5px;''>";
