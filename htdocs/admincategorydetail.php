@@ -126,13 +126,11 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
             catch(PDOException $ex){
                 echo "<script>alert('An error has occured, please try again later.');</script>";
             }
-            parent.window.location.reload();
         }
 
         //Delete Task Button Clicked
         if (isset($_POST['deleteCategory'])){
             date_default_timezone_set("Asia/Singapore");
-            $bidamt = $_POST[bidamt];
             $biddateandtime= date("d/m/Y h:i:sa");
             //$name = $row[name];
             $status = "Open";
@@ -145,7 +143,6 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
             catch(PDOException $ex){
                 echo "<script>alert('An error has occured, please try again later.');</script>";
             }
-            parent.window.location.reload();
         }
 
         //Back Button Clicked

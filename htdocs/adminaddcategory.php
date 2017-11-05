@@ -75,24 +75,19 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
     	<table class='table table-bordered table-striped table-hover col-xs-4 col-md-4 col-lg-4 col-col-xl-4 '>
     	<tr>
     	<td>Name:</td>
-    	<td><input type='text' name='name' value='' style='; background-color: transparent' ></td>
+    	<td><input type='text' name='name' value='' style='background-color: transparent' id='name'></td>
     	</tr>
     	
     	<tr>
     	<td>Description:</td>
-    	<td><textarea name='description'  style='; background-color: transparent; width:600px; height:200px' ></textarea></td>
+    	<td><textarea name='description'  style='; background-color: transparent; width:600px; height:200px' id='description'></textarea></td>
     	</tr>
-    	    	
 
-    	
-    	<table cellpadding='5' align='right'>
-        <tr>
-            <br/><br/>
-             <td><input type='submit' name='back' value='Back' class='btn-default'/></td>
-             <td><input type='submit' name='addCategory' value='Add Category' class='btn-success'/></td>
-         </tr>    
-        </table>
     	</table>
+           <div class="row">
+               <input type='submit' name='back' value='Back' class='btn-default'/>
+               <input type='submit' name='addCategory' value='Add Category' class='btn-success'/>
+           </div>
     	</form>
         <?php
         //Update Task Button clicked
@@ -115,13 +110,10 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
             catch(PDOException $ex){
                 echo "<script>alert('An error has occured, please try again later.');</script>";
             }
-            parent.window.location.reload();
         }
 
         //Back Button Clicked
         if (isset($_POST['back'])){
-            $_SESSION['userName'] = $name;
-            $_SESSION['userId'] = $email;
             header("Location: http://localhost/tasksource21/admincategories.php");
             exit;
         }
