@@ -65,8 +65,6 @@ admin_login_validate_or_redirect()
 </div>
 
 <div class="container" name="page-content-wrapper">
-    <!--welcome message-->
-    <h3 align="right">Welcome back, <?php echo $email; ?>!</h3>
 
     <!-- Menu -->
     <div  align='right' class='container' id="wrapper" style="">
