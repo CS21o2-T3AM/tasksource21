@@ -117,7 +117,7 @@ admin_login_validate_or_redirect();
         $userInput =  $_POST['taskName'];
 
         //Display all Tasks by default
-        $sql = 'select * from tasks ORDER BY id DESC';
+        $sql = 'select * from tasks ORDER BY status, id DESC';
         if(strpos($userInput, '@')){
             //Search by email
             echo "Searching by Owner Email: ".$userInput;
@@ -131,7 +131,7 @@ admin_login_validate_or_redirect();
         }
         else{
             //If all else fails, display default
-            $sql = 'select * from tasks ORDER BY id DESC';
+            $sql = 'select * from tasks ORDER BY status, id DESC';
         }
 
         if(isset($_POST['advancedSearch'])){

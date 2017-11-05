@@ -166,7 +166,86 @@ admin_login_validate_or_redirect()
             </tr>
         </table>
         </div>
-    	
+        
+        <div id='bid-info' class='col-xs-6'>
+        ";
+
+        try {
+            $dbuser = 'postgres';
+            $dbpass = 'password';
+            $host = '127.0.0.1';
+            $dbname='tasksource21';
+
+            $connec = new PDO("pgsql:host=$host;dbname=$dbname", $dbuser, $dbpass);;
+        }catch (PDOException $e) {
+            echo "Error : " . $e->getMessage() . "<br/>";
+            die();
+        }
+
+        //DISPLAY ALL BIDS
+        echo "<h2>Bids</h2>";
+        echo   "<small>Search Bids (Bidder's Email)</small><br/>";
+        echo      "<input type='text' name='bidName' value=''/>";
+        echo     "<button type='submit' name='searchBids' value=''><span class='glyphicon glyphicon-search'></span></button>";
+
+        $_POST['searchBids'] = true;
+        if (isset($_POST['searchBids'])) {
+
+            $userInput = $_POST['bidName'];
+
+            //Dynamically display bids
+            //Display all by default
+            $sql = 'select * from bid_task bt, tasks  t where bt.task_id = '.$taskId.' AND t.id='.$taskId.'  ORDER BY bt.bid_amount DESC';
+
+            if(!empty($userInput)){
+                //Search by email
+                echo " Searching by Email: ".$userInput;
+                //Query using ILIKE
+                $sql = "select * from bid_task bt, tasks t where bt.task_id = ".$taskId." AND t.id=".$taskId."  AND bt.bidder_email ILIKE '%".$userInput."%' ORDER BY bt.bid_amount DESC";
+            }
+//            else if(!empty($userInput)){
+//                //Search by bidName
+//                echo "Searching by Task Name: ".$userInput;
+//                $sql = 'select * from bid_task bt, tasks t Where bt.task_id = '.$taskId.' AND  t.id='.$taskId.'  AND t.name ILIKE'."'%".$userInput."%' ORDER BY bt.task_id ASC";
+//            }
+//            else{
+//                //If all else fails, display default
+//                $sql = 'select * from bid_task bt, tasks t WHERE bt.task_id = '.$taskId.' AND t.id='.$taskId.' ORDER BY bt.task_id ASC';
+//            }
+
+            echo "<div style='height: 300px; width: auto; font-size: 10px; overflow: auto;border:2px solid darkgray; border-radius:5px;'>";
+            echo "<table class='table table-bordered table-striped table-hover'>";
+            echo "<tr>";
+            echo "<th align='center' width='500'>Name</th>";
+            echo "<th align='center' width='200'>Bidder Email</th>";
+            echo "<th align='center' width='200'>Category</th>";
+            echo "<th align='center' width='200'>Status</th>";
+            echo "<th align='center' width='200'>Bid Amount</th>";
+            echo "<th align='center' width='200'>Bidded On</th>";
+            echo "<th align='center' width='200'>Winner</th>";
+
+            foreach ($connec->query($sql) as $row2)
+            {
+                echo "<tr>";
+                echo "<td align='center' width='500'><a href=\"adminbiddetail.php?taskid={$row2['id']}&owneremail={$row2['owner_email']}&bidderemail={$row2['bidder_email']}&useremail={$email}\">".$row2['name']."</a></td>";
+                echo "<td align='center' width='200'>" . $row2['bidder_email'] . "</td>";
+                echo "<td align='center' width='200'>" . $row2['category'] . "</td>";
+                echo "<td align='center' width='200'>" . $row2['status'] . "</td>";
+                echo "<td align='center' width='200'>" . $row2['bid_amount'] . "</td>";
+                echo "<td align='center' width='200'>" . $row2['bid_time'] . "</td>";
+                echo "<td align='center' width='200'>" . $row2['is_winner'] . "</td>";
+                echo "</tr>";
+            }
+
+            echo "</table>";
+            echo "</div>";
+        }
+
+        echo "</table>";
+
+        echo"
+        </div>
+    	</br>
     	<div class='container' align='right'>
     	    <button type='submit' class='btn-default' name='back' id='back' >Back</button>
     	    <button type='submit' class='btn-danger' name='deleteTask' id='deleteTask'>Delete Task</button>

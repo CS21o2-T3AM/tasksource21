@@ -74,7 +74,8 @@ admin_login_validate_or_redirect();
                               SELECT t.*, t.name AS tname, u1.*, u2.*, u1.name AS oname, u1.email AS oemail, u1.phone as ophone, u2.name AS bname, u2.email AS bemail, u2.phone as bphone, bt.*
                               FROM tasks t, bid_task bt, users u1, users u2
                               WHERE  t.id = '$taskId'  AND bt.task_id = '$taskId' 
-                              AND  u2.email = '$bidderEmail' AND u1.email = t.owner_email 
+                              AND  u2.email = '$bidderEmail' AND u1.email = t.owner_email  
+                              AND bt.bidder_email = '$bidderEmail'
                               ");
         $row = pg_fetch_assoc($result);
 
