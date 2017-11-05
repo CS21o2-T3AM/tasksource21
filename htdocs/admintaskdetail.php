@@ -36,7 +36,7 @@ admin_login_validate_or_redirect()
 
         <!--Logo-->
         <div class="navbar-header" style="color:white; float:left; size: 30px" >
-            <h2 href="#" style="color:white">TASKSOURCE21 </h2>
+            <h2  style="color:white">TASKSOURCE21 </h2>
         </div>
 
         <!--Menu Items-->
@@ -70,7 +70,7 @@ admin_login_validate_or_redirect()
         echo "
 
 
-       <div name='content-container' class='col-xs-6'>  
+       <div  class='col-xs-6'>  
        
        <form name='taskform' method='post' >  
        
@@ -79,7 +79,7 @@ admin_login_validate_or_redirect()
     	<table class='table table-bordered table-striped table-hover'>
     	<tr>
     	<td>Task Id:</td>
-    	<td><input type='text' name='taskId' value='$row[id]'   style='border:none; background-color: transparent'readonly></td>
+    	<td><input type='text' name='taskId' value='$row[id]'   style='border:none; background-color: transparent' readonly></td>
     	</tr>
     	
     	<tr>
@@ -110,17 +110,17 @@ admin_login_validate_or_redirect()
     	
     	<tr>
     	<td>Description:</td>
-    	<td><textarea type='text' name='description'  style='height:200px; width:400px '>$row[description]</textarea></td>
+    	<td><textarea  name='description'  style='height:200px; width:400px '>$row[description]</textarea></td>
     	</tr>
     	
     	<tr>
     	<td>Start:</td>
-    	<td><input type='text' name='startdatetime' value='$row[start_datetime]' style='border:none; background-color: transparent'readonly /></td>
+    	<td><input type='text' name='startdatetime' value='$row[start_datetime]' style='border:none; background-color: transparent' readonly /></td>
     	</tr>
     	
     	<tr>
     	<td>End:</td>
-    	<td><input type='text' name='enddatetime' value='$row[end_datetime]' style='border:none; background-color: transparent'readonly /></td>
+    	<td><input type='text' name='enddatetime' value='$row[end_datetime]' style='border:none; background-color: transparent' readonly /></td>
     	</tr>
     	
     	<tr>
@@ -135,12 +135,12 @@ admin_login_validate_or_redirect()
             
         <tr>
        <td>Bidding Deadline:</td>
-    	<td><input type='text' name='biddingdeadline' value='$row[bidding_deadline]' style='border:none; background-color: transparent'readonly /></td>
+    	<td><input type='text' name='biddingdeadline' value='$row[bidding_deadline]' style='border:none; background-color: transparent' readonly /></td>
         </tr>
         
         <tr>
        <td>Last Updated:</td>
-    	<td><input type='text' name='datetimeupdated' value='$row[datetime_updated]' style='border:none; background-color: transparent'readonly/></td>
+    	<td><input type='text' name='datetimeupdated' value='$row[datetime_updated]' style='border:none; background-color: transparent' readonly/></td>
         </tr>
     	</table>
     	
@@ -152,17 +152,17 @@ admin_login_validate_or_redirect()
     	<h3>Owner Information</h3>
     	    <tr>
                 <td>Owner Email:</td>
-    	        <td><input type='text' name='owneremail' value='$row[owner_email]' style='border:none; background-color: transparent'readonly/></td>
+    	        <td><input type='text' name='owneremail' value='$row[owner_email]' style='border:none; background-color: transparent' readonly/></td>
             </tr>
             
             <tr>
                 <td>Name:</td>
-    	        <td><input type='text' name='ownername' value='$row[uname]' style='border:none; background-color: transparent'readonly/></td>
+    	        <td><input type='text' name='ownername' value='$row[uname]' style='border:none; background-color: transparent' readonly/></td>
             </tr>
             
             <tr>
                 <td>Phone No.:</td>
-    	        <td><input type='text' name='ownerphone' value='$row[phone]' style='border:none; background-color: transparent'readonly /></td>
+    	        <td><input type='text' name='ownerphone' value='$row[phone]' style='border:none; background-color: transparent' readonly /></td>
             </tr>
         </table>
         </div>

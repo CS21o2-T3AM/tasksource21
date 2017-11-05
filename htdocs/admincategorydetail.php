@@ -38,7 +38,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
 
         <!--Logo-->
         <div class="navbar-header" style="color:white; float:left" >
-            <h2 href="#" style="color:white">TASKSOURCE21 </h2>
+            <h2  style="color:white">TASKSOURCE21 </h2>
         </div>
 
         <!--Menu Items-->
@@ -90,7 +90,7 @@ $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres pass
     	
     	<tr>
     	<td>Description:</td>
-    	<td><textarea name='description' value='' style='background-color: transparent; width:600px; height:200px' >$row[description]</textarea></td>
+    	<td><textarea name='description' style='background-color: transparent; width:600px; height:200px' >$row[description]</textarea></td>
     	</tr>
     	    	
 

@@ -50,7 +50,7 @@ admin_login_validate_or_redirect();
 
         <!--Logo-->
         <div class="navbar-header" style="color:white; float:left; size: 30px" >
-            <h2 href="#" style="color:white">TASKSOURCE21 </h2>
+            <h2  style="color:white">TASKSOURCE21 </h2>
         </div>
 
         <!--Menu Items-->
@@ -70,7 +70,7 @@ admin_login_validate_or_redirect();
     </div>
 </div>
 
-<div class="container" name="page-content-wrapper">
+<div class="container" >
     <!--welcome message-->
     <h3 align="right">Welcome back, <?php echo $email; ?>!</h3>
 

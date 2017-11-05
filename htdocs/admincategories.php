@@ -45,7 +45,7 @@ admin_login_validate_or_redirect()
 
         <!--Logo-->
         <div class="navbar-header" style="color:white; float:left; size: 30px" >
-            <h2 href="#" style="color:white">TASKSOURCE21 </h2>
+            <h2  style="color:white">TASKSOURCE21 </h2>
         </div>
 
         <!--Menu Items-->
@@ -105,7 +105,7 @@ admin_login_validate_or_redirect()
     //Search Bar
     echo"
     <div class='container' align='right'>
-        <a href='adminaddcategory.php' class='btn-sm btn-success' align='right' style='margin-right: 5px'>+ Task Category</a>
+        <a href='adminaddcategory.php' class='btn-sm btn-success'  style='margin-right: 5px'>+ Task Category</a>
     </div>";
 
 

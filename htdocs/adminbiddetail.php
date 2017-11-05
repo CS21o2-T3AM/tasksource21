@@ -37,7 +37,7 @@ admin_login_validate_or_redirect();
 
         <!--Logo-->
         <div class="navbar-header" style="color:white; float:left; size: 30px">
-            <h2 href="#" style="color:white">TASKSOURCE21 </h2>
+            <h2  style="color:white">TASKSOURCE21 </h2>
         </div>
 
         <!--Menu Items-->
@@ -115,7 +115,7 @@ admin_login_validate_or_redirect();
     	    <table class='table table-bordered table-striped table-hover'>
     	        <tr><td>ID:</td><td><input type='text' name='taskid' value='$row[id]' style='background-color: transparent; border:none; ' readonly></td></tr>
     	        <tr><td>Name: </td><td><input type='text' name='taskname' value='$row[tname]' style='background-color: transparent; border:none; ' readonly></td></tr>
-    	        <tr><td>Description: </td><td><textarea type='text' name='taskdesc'  style='background-color: transparent; border:none; width:300px; height:100px;' readonly>$row[description]</textarea></td></tr>
+    	        <tr><td>Description: </td><td><textarea name='taskdesc'  style='background-color: transparent; border:none; width:300px; height:100px;' readonly>$row[description]</textarea></td></tr>
     	        <tr><td>Start: </td><td><input type='text' name='tstartdate' value='$row[start_datetime]' style='background-color: transparent; border:none; ' readonly></td></tr>
     	        <tr><td>End: </td><td><input type='text' name='tenddate' value='$row[end_datetime]' style='background-color: transparent; border:none; ' readonly></td></tr>
     	        <tr><td>Suggested Price:</td><td><input type='text' name='suggestedprice' value='$row[suggested_price]' style='background-color: transparent; border:none; ' readonly></td></tr>
@@ -152,7 +152,7 @@ admin_login_validate_or_redirect();
 
             $result2 = pg_query($db, "UPDATE bid_task b set bid_amount='$bidamount'
                                                      where b.task_id = '$taskId'  AND b.bidder_email ='$bemail'");
-            if (empty($result3)) {
+            if (empty($result2)) {
                 echo "<script>alert('An error has occured, please try again later.');</script>";
             } else {
                 echo "<script>alert('Bid details successfully updated!');</script>";
@@ -170,7 +170,7 @@ admin_login_validate_or_redirect();
             try {
                 $result2 = pg_query($db, "DELETE FROM  bid_task b
                                                      where b.task_id = '$taskId'  AND b.bidder_email ='$bemail'");
-                echo "<script>alert('Bid successfully updated');</script>";
+                echo "<script>alert('Bid successfully deleted');</script>";
                 echo "<meta http-equiv='refresh' content='0'>";
             } catch (mysqli_sql_exception $ex) {
                 echo "DB Error";

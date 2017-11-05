@@ -117,11 +117,14 @@ admin_login_validate_or_redirect()
         if (isset($_POST['updateUser'])){
             $name=$_POST['name'];
             $phone=$_POST['phone'];
-            $password = $_POST['password_hash'];
+            $password = $_POST['password'];
+
+            require_once '../utils/db_func.inc.php';
+            $password_hash = hash('sha256', $password, false);
             //$name = $row[name];
 
             try {
-                $result3 = pg_query($db, "UPDATE users SET (password_hash,name, phone) = ('$password','$name',  '$phone')
+                $result3 = pg_query($db, "UPDATE users SET (password_hash,name, phone) = ('$password_hash','$name',  '$phone')
                                                      WHERE email='$row[email]'");
                 if(empty($result3)){
                     echo "<script>alert('An error has occured, please try again later.');</script>";
