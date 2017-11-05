@@ -66,7 +66,7 @@ $task_array = get_task_array_or_redirect($dbh);
     require_once '../utils/constants.inc.php';
     $task_id = $_GET[TASK_ID];
     $user_email = $_SESSION[EMAIL];
-    $owner_rating = get_user_avg_rating($dbh, $task_owner, 'owner');
+    $owner_rating = get_user_avg_rating($dbh, $task_owner, 'tasker');
 
     $bid_err = $rate_err = '';
     if (isset($_POST['submit'])) {
@@ -106,7 +106,7 @@ $task_array = get_task_array_or_redirect($dbh);
     } else if ($task_status === STATUS_BIDDING_CLOSED && $task_owner === $user_email) {
         // the owner should now decide the winner
         $choose_winner_button = "<div class=\"col-1 mr-5 \">
-                            <a class=\"btn btn-primary\" href=\"choose_bid.php?task_id=$task_id\">Choose winner</a>
+                            <a class=\"btn btn-primary\" href=\"choose_bid.php?task_id=$task_id\">Choose winner or close</a>
                             </div>";
 
     } else if ($task_status === STATUS_ASSIGNED) {
@@ -153,7 +153,7 @@ $task_array = get_task_array_or_redirect($dbh);
 
 ?>
 
-<body>
+<body style="background-color: #f9f9f9">
 <?php
     include_once '../utils/html_parts/navbar.php';
 ?>

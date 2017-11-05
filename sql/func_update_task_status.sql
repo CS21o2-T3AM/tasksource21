@@ -1,10 +1,3 @@
-/*
- * Tasks whose bidding deadline has reached are:
- * if anyone bidded: -> bidding_closed
- * else if no one bidded -> closed
- * open -> bidding_closed (if bidding) | closed (if no bidding)
- */
-
 CREATE OR REPLACE FUNCTION
   update_task_status()
   RETURNS VOID AS $$
@@ -13,7 +6,6 @@ DECLARE countcursor NO SCROLL CURSOR FOR
   SELECT
     count(b.*) AS bidcount,
     t.id
-
   FROM tasks t
     LEFT JOIN bid_task b
       ON b.task_id = t.id

@@ -339,7 +339,7 @@ function get_tasks_complete($dbh, $user_id) {
 // ================================== rating related ======================================= //
 
 function get_user_avg_rating($dbh, $user_id, $role) {
-    if ($role !== 'owner' && $role !== 'doer')
+    if ($role !== 'tasker' && $role !== 'doer')
         return false;
 
     $statement = 'get user rating';
@@ -401,7 +401,7 @@ function get_bids_and_ratings($dbh, $task_id, $limit) {
                   GROUP BY r.user_email) AS avg_rating
                   ON avg_rating.user_email = b.bidder_email
                   WHERE b.task_id = $1
-                  ORDER BY b.bid_amount DESC';
+                  ORDER BY b.bid_amount ASC';
     $query .= $limit_query;
 
     $result = pg_prepare($dbh, $statement, $query);

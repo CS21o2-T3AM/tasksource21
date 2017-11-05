@@ -5,7 +5,7 @@ CREATE TABLE users (
   password_hash CHARACTER(256) NOT NULL,
   name VARCHAR(50) NOT NULL,
   phone CHARACTER(8) NOT NULL, /* Singapore hand phone */
-  is_admin BOOLEAN DEFAULT false
+  is_admin BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE TABLE task_categories (
@@ -73,13 +73,13 @@ CREATE TABLE bid_task (
 
 /* User ratings as task doers. Use WHERE clause to filter out users by email */
 CREATE VIEW tasker_avg_ratings AS
-  SELECT AVG(t.rating) AS rating, t.user_email
+  SELECT AVG(t.rating) AS avg, COUNT(t.rating) AS count, t.user_email
   FROM task_ratings t
   WHERE role = 'tasker'
   GROUP BY t.user_email;
 
 CREATE VIEW doer_avg_ratings AS
-  SELECT AVG(t.rating) AS rating, t.user_email
+  SELECT AVG(t.rating) AS avg, COUNT(t.rating) AS count, t.user_email
   FROM task_ratings t
   WHERE role = 'doer'
   GROUP BY t.user_email;

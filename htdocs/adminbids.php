@@ -2,7 +2,7 @@
 // Use session to pass information such as email.
 //Note input validation not done yet
 require_once '../utils/login.inc.php';
-admin_login_validate_or_redirect()
+admin_login_validate_or_redirect();
 ?>
 <!DOCTYPE html>
 
