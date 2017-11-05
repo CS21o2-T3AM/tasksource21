@@ -100,7 +100,7 @@ admin_login_validate_or_redirect();
     }
 
        //DISPLAY ALL TASKS
-    echo "<div class='container'  id='tasks-wrapper' class='main-content' >";
+    echo "<div class='container'  id='tasks-wrapper' >";
     echo "<h2>Tasks</h2>";
     echo "<form name='searchTasks' action='' method='POST'>";
     echo   "<br/> <small>Search Tasks (Tasker's Email/ Task Name)</small><br/>";
@@ -109,8 +109,9 @@ admin_login_validate_or_redirect();
                     <button type='submit' name='advancedSearch' value='advancedSearch'><span class='glyphicon glyphicon-eye-open'></span></button>
      ";
     echo "<br/>";
+    echo "<br/>";
 
-    $_POST['searchTasks'] = true;
+
     if (isset($_POST['searchTasks'])) {
         $userInput =  $_POST['taskName'];
 
@@ -137,6 +138,39 @@ admin_login_validate_or_redirect();
         }
         echo "<br/>";
         //Dynamic Task display
+        echo "<div style='height: 300px; width: auto; font-size: 16px; overflow: auto;border:2px solid darkgray; border-radius:5px;''>";
+        echo "<table class='table table-bordered table-striped table-hover'>";
+        echo "<tr>";
+        echo "<th align='center' width='200'>ID</th>";
+        echo "<th align='center' width='200'>Task Name</th>";
+        echo "<th align='center' width='200'>Owner</th>";
+        echo "<th align='center' width='200'>Category</th>";
+        echo "<th align='center' width='200'>Start</th>";
+        echo "<th align='center' width='200'>End</th>";
+        echo "<th align='center' width='200'>Suggested Price</th>";
+        echo "<th align='center' width='200'>Status</th>";
+        echo "<th align='center' width='200'>Bidding Deadline</th>";
+        echo "<th align='center' width='200'>Updated</th>";
+        foreach ($connec->query($sql) as $row)
+        {
+            echo "<tr>";
+            echo "<td align='center' width='200'>" . $row['id']. "</td>";
+            echo "<td align='center' width='200'><a href=\"admintaskdetail.php?taskid={$row['id']}&owneremail={$row['owner_email']}&useremail=$email\">". $row['name'] ."</a></td>";
+            echo "<td align='center' width='200'>" . $row['owner_email'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['category'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['start_datetime'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['end_datetime'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['suggested_price'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['status'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['bidding_deadline'] . "</td>";
+            echo "<td align='center' width='200'>" . $row['datetime_updated'] . "</td>";
+            echo "</tr>";}
+        echo "</table>";
+        echo "</div>";
+    }
+
+    else{
+        $sql = 'select * from tasks ORDER BY status, id DESC';
         echo "<div style='height: 300px; width: auto; font-size: 16px; overflow: auto;border:2px solid darkgray; border-radius:5px;''>";
         echo "<table class='table table-bordered table-striped table-hover'>";
         echo "<tr>";

@@ -34,7 +34,7 @@ admin_login_validate_or_redirect()
 
         <!--Logo-->
         <div class="navbar-header" style="color:white; float:left" >
-            <h2 href="#" style="color:white">TASKSOURCE21 </h2>
+            <h2  style="color:white">TASKSOURCE21 </h2>
         </div>
 
         <!--Menu Items-->
@@ -136,13 +136,11 @@ admin_login_validate_or_redirect()
             catch(PDOException $ex){
                 echo "<script>alert('An error has occured, please try again later.');</script>";
             }
-            parent.window.location.reload();
         }
 
         //Delete Task Button Clicked
         if (isset($_POST['deleteUser'])){
             date_default_timezone_set("Asia/Singapore");
-            $bidamt = $_POST[bidamt];
             $biddateandtime= date("d/m/Y h:i:sa");
             //$name = $row[name];
             $status = "Open";
@@ -155,7 +153,6 @@ admin_login_validate_or_redirect()
             catch(PDOException $ex){
                 echo "<script>alert('An error has occured, please try again later.');</script>";
             }
-            parent.window.location.reload();
         }
 
         //Back Button Clicked

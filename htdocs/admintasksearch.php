@@ -5,6 +5,7 @@ require_once '../utils/login.inc.php';
 admin_login_validate_or_redirect();
 ?>
 <!DOCTYPE html>
+<html>
 
 
 <head>
@@ -110,7 +111,7 @@ admin_login_validate_or_redirect();
     $categories_result = pg_query($db, "SELECT * FROM task_categories");
 
        //DISPLAY ALL TASKS
-    echo "<div class='container' name='task-wrapper' id='tasks-wrapper' >";
+    echo "<div class='container' id='tasks-wrapper' >";
     echo "<h2>Tasks</h2>";
     echo "<form name='searchTasks' action='' method='POST'>";
     echo   "<br/> <small>Search Tasks (Tasker's Email/ Task Name)</small><br/>";

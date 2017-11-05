@@ -89,7 +89,6 @@ admin_login_validate_or_redirect()
     	
 	    <tr>
     	<td>Category:</td>
-    	<!--<td><input type='text' name='category' value='$row[category]' /></td>-->
     	<td>
     	";
 
@@ -99,7 +98,7 @@ admin_login_validate_or_redirect()
         while($row_categories=pg_fetch_assoc($categories_result)){
             $active = '';
             $display = $row_categories["name"];
-            if($display ==  $row[category]){$active='selected="selected"';}
+            if($display ==   $row["category"]){$active='selected="selected"';}
         echo"<option value = '$display' $active>$display</option>'";
         }
         echo"</select>";
@@ -290,14 +289,12 @@ admin_login_validate_or_redirect()
             catch(PDOException $ex){
                 echo "<script>alert('An error has occured, please try again later.');</script>";
             }
-            parent.window.location.reload();
             echo "<meta http-equiv='refresh' content='0'>";
         }
 
         //Delete Task Button Clicked
         if (isset($_POST['deleteTask'])){
             date_default_timezone_set("Asia/Singapore");
-            $bidamt = $_POST[bidamt];
             $biddateandtime= date("d/m/Y h:i:sa");
             //$name = $row[name];
             $status = "Open";
@@ -310,7 +307,6 @@ admin_login_validate_or_redirect()
                 echo "<script>alert('An error has occured, please try again later.');</script>";
             }
             echo "<meta http-equiv='refresh' content='0'>";
-            parent.window.location.reload();
         }
 
         //Back Button Clicked
@@ -320,8 +316,6 @@ admin_login_validate_or_redirect()
             echo '<script>window.location = "/tasksource21/admintasks.php";</script>';
             exit;
         }
-
-        parent.window.location.reload();
         ?>
 
     </div>

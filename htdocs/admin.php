@@ -43,7 +43,7 @@ admin_login_validate_or_redirect();
 
         <!--Logo-->
         <div class="navbar-header" style="color:white; float:left; size: 30px" >
-            <h2 href="#" style="color:white">TASKSOURCE21 </h2>
+            <h2 style="color:white">TASKSOURCE21 </h2>
         </div>
 
         <!--Menu Items-->
@@ -112,7 +112,6 @@ admin_login_validate_or_redirect();
 
     echo "<br/>";
 
-    $_POST['searchUsers'] = true;
     if (isset($_POST['searchUsers'])) {
 
         $userInput = $_POST['userName'];
@@ -152,16 +151,33 @@ admin_login_validate_or_redirect();
             echo "<td align='center' width='50'>" . $row['name'] . "</td>";
             echo "<td align='center' width='20'>" . $row['phone'] . "</td>";
             echo "<td align='center' width='5'>" . $row['is_admin'] . "</td>";
-            echo "</tr>";}
+            echo "</tr>";
+        }
 
         echo "</table>";
     }
-    echo "</div>";//user wrapper div
-    echo "<br/>";
-    echo "<br/>";
+    else{
+        $sql = 'select * from users ORDER BY email ASC ';
 
-    echo "<br/>";
-    echo "<br/>";
+    echo "<div style='height: 300px; width: auto ; font-size: 16px; overflow: auto;border:2px solid darkgray; border-radius:5px;'>";
+    echo "<table class='table table-bordered table-striped table-hover'>";
+    echo "<tr>";
+    echo "<th align='center' width='100'>Email</th>";
+    echo "<th align='center' width='50'>Name</th>";
+    echo "<th align='center' width='20'>Phone</th>";
+    echo "<th align='center' width='5'>Admin</th>";
+
+    foreach ($connec->query($sql) as $row)
+    {
+        echo "<tr>";
+        echo "<td align='center' width='100'><a href=\"adminuserdetail.php?targetuseremail={$row['email']}&useremail={$email}\">".$row['email']."</a></td>";
+        echo "<td align='center' width='50'>" . $row['name'] . "</td>";
+        echo "<td align='center' width='20'>" . $row['phone'] . "</td>";
+        echo "<td align='center' width='5'>" . $row['is_admin'] . "</td>";
+        echo "</tr>";
+    }
+    }
+    echo "</div>";//user wrapper div
     ?>
 
 </div> <!--page-content-wrapper div-->

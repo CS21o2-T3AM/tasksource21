@@ -5,7 +5,7 @@ require_once '../utils/login.inc.php';
 admin_login_validate_or_redirect()
 ?>
 <!DOCTYPE html>
-
+<html>
 
 <head>
     <title>Admin Control Panel</title>
@@ -100,7 +100,7 @@ admin_login_validate_or_redirect()
     }
 
       //DISPLAY ALL BIDS
-    echo"<div class='container' id='bids-wrapper' class='main-content' >";
+    echo"<div class='container' id='bids-wrapper'  >";
     echo "<h2>Bids</h2>";
     echo "<form name='searchBids' action='' method='POST'>";
     echo   "<br/> <small>Search Bids (Bidder's Email/ Task Name)</small><br/>";
@@ -108,7 +108,6 @@ admin_login_validate_or_redirect()
     echo     "<button type='submit' name='searchBids' value=''><span class='glyphicon glyphicon-search'></span></button>";
     echo"</form><br/>";
 
-    $_POST['searchBids'] = true;
     if (isset($_POST['searchBids'])) {
 
         $userInput = $_POST['bidName'];
@@ -164,6 +163,43 @@ admin_login_validate_or_redirect()
 
         echo "</table>";
         echo "</div>";
+    }
+    //User loads the page for first time
+    else{
+        $sql = 'select * from bid_task bt, tasks t WHERE bt.task_id = t.id ORDER BY bt.task_id ASC';
+    echo "<div style='height: 300px; width: auto; font-size: 16px; overflow: auto;border:2px solid darkgray; border-radius:5px;'>";
+    echo "<table class='table table-bordered table-striped table-hover'>";
+    echo "<tr>";
+    echo "<th align='center' width='200'>Task ID</th>";
+    echo "<th align='center' width='500'>Name</th>";
+    echo "<th align='center' width='200'>Bidder Email</th>";
+    echo "<th align='center' width='200'>Category</th>";
+    echo "<th align='center' width='200'>Start</th>";
+    echo "<th align='center' width='200'>End</th>";
+    echo "<th align='center' width='200'>Status</th>";
+    echo "<th align='center' width='200'>Bidding Deadline</th>";
+    echo "<th align='center' width='200'>Bid Amount</th>";
+    echo "<th align='center' width='200'>Bidded On</th>";
+    echo "<th align='center' width='200'>Winner</th>";
+
+    foreach ($connec->query($sql) as $row)
+    {
+        echo "<tr>";
+        echo "<td align='center' width='200'>" . $row['task_id'] . "</td>";
+        echo "<td align='center' width='500'><a href=\"adminbiddetail.php?taskid={$row['id']}&owneremail={$row['owner_email']}&bidderemail={$row['bidder_email']}&useremail={$email}\">".$row['name']."</a></td>";
+        echo "<td align='center' width='200'>" . $row['bidder_email'] . "</td>";
+        echo "<td align='center' width='200'>" . $row['category'] . "</td>";
+        echo "<td align='center' width='200'>" . $row['start_datetime'] . "</td>";
+        echo "<td align='center' width='200'>" . $row['end_datetime'] . "</td>";
+        echo "<td align='center' width='200'>" . $row['status'] . "</td>";
+        echo "<td align='center' width='200'>" . $row['bidding_deadline'] . "</td>";
+        echo "<td align='center' width='200'>" . $row['bid_amount'] . "</td>";
+        echo "<td align='center' width='200'>" . $row['bid_time'] . "</td>";
+        echo "<td align='center' width='200'>" . $row['is_winner'] . "</td>";
+        echo "</tr>";}
+
+    echo "</table>";
+    echo "</div>";
     }
 
     echo "</table>";

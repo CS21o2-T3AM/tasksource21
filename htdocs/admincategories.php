@@ -5,7 +5,7 @@ require_once '../utils/login.inc.php';
 admin_login_validate_or_redirect()
 ?>
 <!DOCTYPE html>
-
+<html>
 
 <head>
     <title>Admin Task Categories</title>
@@ -64,7 +64,7 @@ admin_login_validate_or_redirect()
     </div>
 </div>
 
-<div class="container" name="page-content-wrapper">
+<div class="container" >
 
     <!-- Menu -->
     <div  align='right' class='container' id="wrapper" style="">
