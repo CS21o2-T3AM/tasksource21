@@ -1,8 +1,7 @@
 <?php
-// Use session to pass information such as email.
-//Note input validation not done yet
 require_once '../utils/login.inc.php';
 admin_login_validate_or_redirect();
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -186,7 +185,7 @@ admin_login_validate_or_redirect();
     {
         echo "<tr>";
         echo "<td align='center' width='200'>" . $row['task_id'] . "</td>";
-        echo "<td align='center' width='500'><a href=\"adminbiddetail.php?taskid={$row['id']}&owneremail={$row['owner_email']}&bidderemail={$row['bidder_email']}&useremail={$email}\">".$row['name']."</a></td>";
+        echo "<td align='center' width='500'><a href=\"adminbiddetail.php?taskid={$row['id']}&owneremail={$row['owner_email']}&bidderemail={$row['bidder_email']}\">".$row['name']."</a></td>";
         echo "<td align='center' width='200'>" . $row['bidder_email'] . "</td>";
         echo "<td align='center' width='200'>" . $row['category'] . "</td>";
         echo "<td align='center' width='200'>" . $row['start_datetime'] . "</td>";

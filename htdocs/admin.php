@@ -48,7 +48,7 @@ admin_login_validate_or_redirect();
 
         <!--Menu Items-->
         <div style='float: right; margin-right:10px; margin-top: 18px' >
-            <form name="home" action="index.php" method="POST">
+            <form name="home" action="" method="POST">
                 <button type="submit" name="logout" style="background-color:white; color:grey; border-radius: 5px;  align-content: center; vertical-align: middle;">Log Out</button>
             </form>
         </div>
@@ -94,8 +94,7 @@ admin_login_validate_or_redirect();
 
     //Log out button pressed
     if (isset($_POST['logout'])){
-        //pass email and username to next page
-        header("Location: index.php"); //send user to the next page
+        header("Location: logout.php"); //send user to the next page
         exit;
     }
 
@@ -170,7 +169,7 @@ admin_login_validate_or_redirect();
     foreach ($connec->query($sql) as $row)
     {
         echo "<tr>";
-        echo "<td align='center' width='100'><a href=\"adminuserdetail.php?targetuseremail={$row['email']}&useremail={$email}\">".$row['email']."</a></td>";
+        echo "<td align='center' width='100'><a href=\"adminuserdetail.php?targetuseremail={$row['email']}\">".$row['email']."</a></td>";
         echo "<td align='center' width='50'>" . $row['name'] . "</td>";
         echo "<td align='center' width='20'>" . $row['phone'] . "</td>";
         echo "<td align='center' width='5'>" . $row['is_admin'] . "</td>";

@@ -1,14 +1,17 @@
 <?php
-session_start();
+require_once '../utils/login.inc.php';
+admin_login_validate_or_redirect();
+
 $taskId = $_GET['taskid'];
 $ownerEmail = $_GET['owneremail'];
-$userEmail = $_GET['useremail'];
 $bidderEmail = $_GET['bidderemail'];
 
 $db = pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=password");
 
-require_once '../utils/login.inc.php';
-admin_login_validate_or_redirect();
+if (isset($_POST['back'])) {
+    header('Location: adminbids.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -42,7 +45,7 @@ admin_login_validate_or_redirect();
 
         <!--Menu Items-->
         <div style='float: right; margin-right:10px; margin-top: 18px'>
-            <form name="home" action="index.php" method="POST">
+            <form name="home" action="logout.php" method="POST">
                 <button type="submit" name="logout"
                         style="background-color:white; color:grey; border-radius: 5px;  align-content: center; vertical-align: middle;">
                     Log Out
@@ -178,10 +181,6 @@ admin_login_validate_or_redirect();
             }
         }
 
-        if (isset($_POST['back'])) {
-            echo '<script>window.location = "/tasksource21/adminbids.php";</script>';
-            exit;
-        }
         ?>
 
     </div>

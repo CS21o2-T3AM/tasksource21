@@ -1,3 +1,9 @@
+/*
+ * This function looks at tasks whose bidding_deadline has reached.
+ * If there is any bidder, the status is set to bidding_closed
+ * Otherwise, the task is closed
+ */
+
 CREATE OR REPLACE FUNCTION
   update_task_status()
   RETURNS VOID AS $$

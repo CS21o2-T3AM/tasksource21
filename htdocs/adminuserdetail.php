@@ -1,12 +1,9 @@
 <?php
-session_start();
-$targetuseremail=$_GET['targetuseremail'];
-$userEmail= $_GET['useremail'];
+require_once '../utils/login.inc.php';
+admin_login_validate_or_redirect();
+$targetuseremail = $_GET['targetuseremail'];
 
 $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=password");
-
-require_once '../utils/login.inc.php';
-admin_login_validate_or_redirect()
 ?>
 <!DOCTYPE html>
 
@@ -96,7 +93,7 @@ admin_login_validate_or_redirect()
     	
     	<tr>
     	<td>Password:</td>
-    	<td><input type='password' name='password' value='$row[password]' style='background-color: transparent' ></td>
+    	<td><input type='password' name='password' value='$row[password_hash]' style='background-color: transparent' ></td>
     	</tr>
     	
     	<table cellpadding='5' align='right' >
@@ -157,7 +154,7 @@ admin_login_validate_or_redirect()
 
         //Back Button Clicked
         if (isset($_POST['back'])){
-            echo '<script>window.location = "/tasksource21/admin.php";</script>';
+            header('Location: admin.php');
             exit;
         }
 

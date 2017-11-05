@@ -155,7 +155,7 @@ admin_login_validate_or_redirect();
         {
             echo "<tr>";
             echo "<td align='center' width='200'>" . $row['id']. "</td>";
-            echo "<td align='center' width='200'><a href=\"admintaskdetail.php?taskid={$row['id']}&owneremail={$row['owner_email']}&useremail=$email\">". $row['name'] ."</a></td>";
+            echo "<td align='center' width='200'><a href=\"admintaskdetail.php?taskid={$row['id']}&owneremail={$row['owner_email']}\">". $row['name'] ."</a></td>";
             echo "<td align='center' width='200'>" . $row['owner_email'] . "</td>";
             echo "<td align='center' width='200'>" . $row['category'] . "</td>";
             echo "<td align='center' width='200'>" . $row['start_datetime'] . "</td>";
@@ -188,7 +188,7 @@ admin_login_validate_or_redirect();
         {
             echo "<tr>";
             echo "<td align='center' width='200'>" . $row['id']. "</td>";
-            echo "<td align='center' width='200'><a href=\"admintaskdetail.php?taskid={$row['id']}&owneremail={$row['owner_email']}&useremail=$email\">". $row['name'] ."</a></td>";
+            echo "<td align='center' width='200'><a href=\"admintaskdetail.php?taskid={$row['id']}&owneremail={$row['owner_email']}\">". $row['name'] ."</a></td>";
             echo "<td align='center' width='200'>" . $row['owner_email'] . "</td>";
             echo "<td align='center' width='200'>" . $row['category'] . "</td>";
             echo "<td align='center' width='200'>" . $row['start_datetime'] . "</td>";

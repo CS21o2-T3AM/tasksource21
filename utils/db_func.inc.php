@@ -26,11 +26,17 @@ function get_all_open_tasks($dbh, $task_keywords, $address_keywords, $start_dt, 
               WHERE t.status = \'open\' ';
 
     if (!empty($task_keywords)) {
-        $query .= "AND (t.name LIKE '%$task_keywords%' OR t.description LIKE '%$task_keywords') ";
+        $keywords_array = explode(' ', $task_keywords);
+        foreach($keywords_array as $keyword) {
+            $query .= "AND (t.name LIKE '%$keyword%' OR t.description LIKE '%$keyword%') ";
+        }
     }
 
     if (!empty($address_keywords)) {
-        $query .= "AND t.address LIKE '%$address_keywords%' ";
+        $keywords_array = explode(' ', $address_keywords);
+        foreach($keywords_array as $keyword) {
+            $query .= "AND t.address LIKE '%$keyword%' ";
+        }
     }
 
     if (!empty($category)) {

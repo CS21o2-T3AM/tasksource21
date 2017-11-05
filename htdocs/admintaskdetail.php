@@ -1,15 +1,17 @@
 <?php
-session_start();
+require_once '../utils/login.inc.php';
+admin_login_validate_or_redirect();
+
 date_default_timezone_set('Asia/Singapore');
 $taskId= $_GET['taskid'];
 $ownerEmail= $_GET['owneremail'];
-$userEmail= $_GET['useremail'];
-
 $db= pg_connect("host=127.0.0.1 port=5432 dbname=tasksource21 user=postgres password=password");
 
-
-require_once '../utils/login.inc.php';
-admin_login_validate_or_redirect()
+//Back Button Clicked
+if (isset($_POST['back'])){
+    header('Location: admintasks.php');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 
@@ -41,7 +43,7 @@ admin_login_validate_or_redirect()
 
         <!--Menu Items-->
         <div style='float: right; margin-right:10px; margin-top: 18px' >
-            <form name="home" action="index.php" method="POST">
+            <form name="home" action="logout.php" method="POST">
                 <button type="submit" name="logout" style="background-color:white; color:grey; border-radius: 5px;  align-content: center; vertical-align: middle;">Log Out</button>
             </form>
 
@@ -185,12 +187,12 @@ admin_login_validate_or_redirect()
         echo "<h2>Bids</h2>";
         echo   "<small>Search Bids (Bidder's Email)</small><br/>";
         echo      "<input type='text' name='bidName' value=''/>";
-        echo     "<button type='submit' name='searchBids' value=''><span class='glyphicon glyphicon-search'></span></button>";
+        echo     "<button type='submit' name='searchBids'><span class='glyphicon glyphicon-search'></span></button>";
 
         $_POST['searchBids'] = true;
         if (isset($_POST['searchBids'])) {
 
-            $userInput = $_POST['bidName'];
+            $userInput =  isset($_POST['bidName']) ? $_POST['bidName']: '';
 
             //Dynamically display bids
             //Display all by default
@@ -202,15 +204,6 @@ admin_login_validate_or_redirect()
                 //Query using ILIKE
                 $sql = "select * from bid_task bt, tasks t where bt.task_id = ".$taskId." AND t.id=".$taskId."  AND bt.bidder_email ILIKE '%".$userInput."%' ORDER BY bt.bid_amount DESC";
             }
-//            else if(!empty($userInput)){
-//                //Search by bidName
-//                echo "Searching by Task Name: ".$userInput;
-//                $sql = 'select * from bid_task bt, tasks t Where bt.task_id = '.$taskId.' AND  t.id='.$taskId.'  AND t.name ILIKE'."'%".$userInput."%' ORDER BY bt.task_id ASC";
-//            }
-//            else{
-//                //If all else fails, display default
-//                $sql = 'select * from bid_task bt, tasks t WHERE bt.task_id = '.$taskId.' AND t.id='.$taskId.' ORDER BY bt.task_id ASC';
-//            }
 
             echo "<div style='height: 300px; width: auto; font-size: 10px; overflow: auto;border:2px solid darkgray; border-radius:5px;'>";
             echo "<table class='table table-bordered table-striped table-hover'>";
@@ -262,19 +255,8 @@ admin_login_validate_or_redirect()
             $tname = $_POST['tname'];
             $category = $_POST['category_dropdown'];
             $description = $_POST['description'];
-            //$startdatetime = $_POST['startdatetime'];
-             // $enddatetime = $_POST['enddatetime'];
             $suggested_price = $_POST['suggestedprice'];
             $status = $_POST['status'];
-            //$biddingdeadline = $_POST['bidding_deadline'];
-            //$lastupdated =  date("Y-m-d H:i:s O");
-
-//            echo $taskId;
-//            echo $tname;
-//            echo $category;
-//            echo $lastupdated;
-//            echo $suggested_price;
-//            echo $status;
 
             try {
                 $result3 = pg_query($db, "UPDATE tasks SET (name, category, description, suggested_price, status, datetime_updated) = ('$tname', '$category', '$description',
@@ -296,7 +278,6 @@ admin_login_validate_or_redirect()
         if (isset($_POST['deleteTask'])){
             date_default_timezone_set("Asia/Singapore");
             $biddateandtime= date("d/m/Y h:i:sa");
-            //$name = $row[name];
             $status = "Open";
             try {
                 $result3 = pg_query($db, "DELETE FROM tasks 
@@ -309,13 +290,6 @@ admin_login_validate_or_redirect()
             echo "<meta http-equiv='refresh' content='0'>";
         }
 
-        //Back Button Clicked
-        if (isset($_POST['back'])){
-            $_SESSION['userName'] = $name;
-            $_SESSION['userId'] = $email;
-            echo '<script>window.location = "/tasksource21/admintasks.php";</script>';
-            exit;
-        }
         ?>
 
     </div>
